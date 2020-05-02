@@ -4,6 +4,7 @@
     "type": "library",
     "homepage": "https://github.com/nanato12/phine",
     "keywords": ["phine"],
+    "minimum-stability": "stable",
     "require": {
         "linecorp/line-bot-sdk": "^4.3"
     },
