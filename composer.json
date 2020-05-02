@@ -4,7 +4,9 @@
     "type": "library",
     "version": "1.0.0",
     "require": {
-        "linecorp/line-bot-sdk": "^4.3",
+        "linecorp/line-bot-sdk": "^4.3"
+    },
+    "require-dev": {
         "phpunit/phpunit": "*"
     },
     "license": "Apache-2.0",
