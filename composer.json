@@ -2,7 +2,8 @@
     "name": "nanato12/phine",
     "description": "LINE Official Bot PHP Library",
     "type": "library",
-    "version": "1.0.0",
+    "homepage": "https://github.com/nanato12/phine",
+    "keywords": ["phine"],
     "require": {
         "linecorp/line-bot-sdk": "^4.3"
     },
