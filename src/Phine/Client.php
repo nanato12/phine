@@ -10,8 +10,6 @@ Copyright: nanato12
 
 namespace Phine;
 
-include(__DIR__.'/service.php');
-
 use \LINE\LINEBot\HTTPClient\CurlHTTPClient;
 
 class Client extends Service{

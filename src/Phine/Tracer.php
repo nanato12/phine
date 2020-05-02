@@ -10,8 +10,6 @@ Copyright: nanato12
 
 namespace Phine;
 
-include(__DIR__.'/types.php');
-
 class Tracer extends Types {
 
     public $reactionEvents = array();
