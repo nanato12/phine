@@ -1,0 +1,22 @@
+{
+    "name": "nanato12/phine",
+    "description": "LINE Official Bot PHP Library",
+    "type": "library",
+    "version": "1.0.0",
+    "require": {
+        "linecorp/line-bot-sdk": "^4.3",
+        "phpunit/phpunit": "*"
+    },
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "nanato12",
+            "email": "admin@nanato12.info"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Phine\\": "src/"
+        }
+    }
+}
