@@ -57,19 +57,19 @@ class Service {
     function replyFlexMessage($replyToken, $flexContent){
         return $this->client->replyMessage(
             $replyToken,
-            new LINE\LINEBot\MessageBuilder\RawMessageBuilder($flexContent)
+            new RawMessageBuilder($flexContent)
         );
     }
     function replyImageMessage($replyToken, $imageUrl){
         return $this->client->replyMessage(
             $replyToken,
-            new LINE\LINEBot\MessageBuilder\ImageMessageBuilder($imageUrl, $imageUrl)
+            new ImageMessageBuilder($imageUrl, $imageUrl)
         );
     }
     function replyStickerMessage($replyToken, $packageId, $stickerId){
         return $this->client->replyMessage(
             $replyToken,
-            new LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageId, $stickerId)
+            new StickerMessageBuilder($packageId, $stickerId)
         );
     }
     function pushMessage($to, $message){
