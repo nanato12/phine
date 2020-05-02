@@ -2,7 +2,7 @@
     "name": "nanato12/phine",
     "description": "LINE Official Bot PHP Library",
     "type": "library",
-    "homepage": "https://github.com/nanato12/phine",
+    "homepage": "https://blog.nanato12.info",
     "keywords": ["phine"],
     "minimum-stability": "stable",
     "require": {
