@@ -13,6 +13,7 @@ namespace Phine;
 
 use LINE\LINEBot\MessageBuilder\RawMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
+use LINE\LINEBot\MessageBuilder\VideoMessageBuilder;
 use LINE\LINEBot\MessageBuilder\StickerMessageBuilder;
 
 class Service {
@@ -64,6 +65,12 @@ class Service {
         return $this->client->replyMessage(
             $replyToken,
             new ImageMessageBuilder($imageUrl, $imageUrl)
+        );
+    }
+    function replyVideoMessage($replyToken, $contentUrl, $previewUrl){
+        return $this->client->replyMessage(
+            $replyToken,
+            new VideoMessageBuilder($contentUrl, $previewUrl)
         );
     }
     function replyStickerMessage($replyToken, $packageId, $stickerId){
