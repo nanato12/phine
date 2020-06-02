@@ -2,6 +2,8 @@
 
 /*
 
+Bot event type object
+
 LINE Official Bot Event
 https://line.github.io/line-bot-sdk-php/class-LINE.LINEBot.Event.BaseEvent.html
 
@@ -12,6 +14,7 @@ Copyright: nanato12
 namespace Phine;
 
 class Types{
+
     public $eventTypes = array(
         'LINE\LINEBot\Event\AccountLinkEvent' => 'AccountLinkEvent',
         'LINE\LINEBot\Event\BeaconDetectionEvent' => 'BeaconDetectionEvent',
