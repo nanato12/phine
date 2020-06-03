@@ -42,8 +42,19 @@ class Service extends Message {
     function getAllRoomMemberIds($roomId) {
         return $this->client->getAllRoomMemberIds($roomId);
     }
-    function getMessageContent($messageId) {
-        return $this->client->getMessageContent($messageId);
+    function saveMessageContent($messageId, $fileName=null) {
+        $content = $this->client->getMessageContent($messageId);
+        $headers = $content->getHeaders();
+        if (is_null($fileName)) {
+            $fileInfo = explode('/', $headers['Content-Type']);
+            $directory = $fileInfo[0];
+            $extention = $fileInfo[1];
+            if (!file_exists("content/${directory}")) {
+                mkdir("content/${directory}", 0777, $recursive=true);
+            }
+            $fileName = "content/${directory}/${messageId}.${extention}";
+        }
+        file_put_contents($fileName, $content->getRawBody());
     }
 
     // send message function
@@ -70,48 +81,35 @@ class Service extends Message {
     function replyVideoMessage(...$videoContentArray) {
         $messages = [];
         foreach ($videoContentArray as $videoContent) {
-            array_push($messages, $this->createVideoMessage($videoContent['contentUrl'], $videoContent['previewUrl']));
+            array_push($messages, $this->createVideoMessage($videoContent));
         }
         return $this->replyMessage($messages);
     }
     function replyAudioMessage(...$audioContentArray) {
         $messages = [];
         foreach ($audioContentArray as $audioContent) {
-            array_push($messages, $this->createAudioMessage($audioContent['contentUrl'], $audioContent['duration']));
+            array_push($messages, $this->createAudioMessage($audioContent));
         }
         return $this->replyMessage($messages);
     }
     function replyStickerMessage(...$stickerContentArray) {
         $messages = [];
         foreach ($stickerContentArray as $stickerContent) {
-            array_push($messages, $this->createStickerMessage($stickerContent['packageId'], $stickerContent['stickerId']));
+            array_push($messages, $this->createStickerMessage($stickerContent));
         }
         return $this->replyMessage($messages);
     }
     function replyLocationMessage(...$locationContentArray) {
         $messages = [];
         foreach ($locationContentArray as $locationContent) {
-            array_push(
-                $messages,
-                $this->createLocationMessage(
-                    $locationContent['title'],
-                    $locationContent['address'],
-                    $locationContent['latitude'],
-                    $locationContent['longitude']
-                )
-            );
+            array_push($messages, $this->createLocationMessage($locationContent));
         }
         return $this->replyMessage($messages);
     }
     function replyFlexMessage(...$flexContentArray) {
         $messages = [];
         foreach ($flexContentArray as $flexContent) {
-            $rawContent = [
-                'type' => 'flex',
-                'altText' => 'てすと',
-                'contents' => $flexContent
-            ];
-            array_push($messages, $this->createRawMessage($rawContent));
+            array_push($messages, $this->createFlexMessage($flexContent));
         }
         return $this->replyMessage($messages);
     }

@@ -46,38 +46,63 @@ class Message {
     public $senderData = null;
 
     function createTextMessage($text) {
-        $content = [
+        $rawContent = [
             'type' => 'text',
             'text' => $text
         ];
-        return $this->createRawMessage($content);
+        return $this->createRawMessage($rawContent);
     }
     function createImageMessage($imageUrl) {
         return new ImageMessageBuilder($imageUrl, $imageUrl, $this->quickReply, $this->sender);
     }
-    function createVideoMessage($contentUrl, $previewUrl) {
-        return new VideoMessageBuilder($contentUrl, $previewUrl, $this->quickReply, $this->sender);
+    function createVideoMessage($videoContent) {
+        return new VideoMessageBuilder(
+            $videoContent['contentUrl'], $videoContent['previewUrl'],
+            $this->quickReply, $this->sender
+        );
     }
-    function createAudioMessage($contentUrl, $duration) {
-        return new AudioMessageBuilder($contentUrl, $duration, $this->quickReply, $this->sender);
+    function createAudioMessage($audioContent) {
+        return new AudioMessageBuilder(
+            $audioContent['contentUrl'], $audioContent['duration'],
+            $this->quickReply, $this->sender
+        );
     }
-    function createStickerMessage($packageId, $stickerId) {
-        return new StickerMessageBuilder($packageId, $stickerId, $this->quickReply, $this->sender);
+    function createStickerMessage($stickerContent) {
+        return new StickerMessageBuilder(
+            $stickerContent['packageId'], $stickerContent['stickerId'],
+            $this->quickReply, $this->sender
+        );
     }
-    function createLocationMessage($title, $address, $latitude, $longitude) {
-        return new LocationMessageBuilder($title, $address, $latitude, $longitude, $this->quickReply, $this->sender);
+    function createLocationMessage($locationContent) {
+        return new LocationMessageBuilder(
+            $locationContent['title'], $locationContent['address'],
+            $locationContent['latitude'], $locationContent['longitude'],
+            $this->quickReply, $this->sender
+        );
+    }
+    function createFlexMessage($flexContent, $altText='Flex Message') {
+        $rawContent = [
+            'type' => 'flex',
+            'altText' => $altText,
+            'contents' => $flexContent
+        ];
+        return $this->createRawMessage($rawContent);
     }
     function createRawMessage($content) {
-        $content['quickReply'] = $this->quickReplyData;
-        $content['sender'] = $this->senderData;
+        if ( !is_null($this->quickReplyData) ){
+            $content['quickReply'] = $this->quickReplyData;
+        }
+        if ( !is_null($this->senderData) ) {
+            $content['sender'] = $this->senderData;
+        }
         return new RawMessageBuilder($content);
     }
     function createMultiMessage($messages) {
-        if (count($messages) > 5) {
+        if ( count($messages) > 5 ) {
             throw new Exception('send messages limit 5 at onece.');
         }
         $multiMessage = new MultiMessageBuilder();
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
             $multiMessage->add($message);
         }
         return $multiMessage;
