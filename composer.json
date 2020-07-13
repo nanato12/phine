@@ -6,7 +6,7 @@
     "keywords": ["phine"],
     "minimum-stability": "stable",
     "require": {
-        "linecorp/line-bot-sdk": "^4.3"
+        "linecorp/line-bot-sdk": "^4.4"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
@@ -19,8 +19,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "Phine\\": "src/"
+        "psr-4": {
+            "Phine\\": "src/Phine/"
         }
     }
 }
