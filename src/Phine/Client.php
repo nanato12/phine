@@ -13,6 +13,8 @@ namespace Phine;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 
+use Phine\Service;
+
 class Client extends Service {
 
     function __construct($channelSecret, $channelAccessToken) {

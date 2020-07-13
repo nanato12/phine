@@ -13,7 +13,7 @@ Copyright: nanato12
 
 namespace Phine;
 
-class Types{
+class Types {
 
     public $eventTypes = array(
         'LINE\LINEBot\Event\AccountLinkEvent' => 'AccountLinkEvent',

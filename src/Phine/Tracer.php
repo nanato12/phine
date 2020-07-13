@@ -12,6 +12,8 @@ Copyright: nanato12
 
 namespace Phine;
 
+use Phine\Types;
+
 class Tracer extends Types {
 
     public $reactionEvents = [];

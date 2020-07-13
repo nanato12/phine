@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 
@@ -9,6 +9,8 @@ Copyright: nanato12
 */
 
 namespace Phine;
+
+use Phine\Message;
 
 class Service extends Message {
 
