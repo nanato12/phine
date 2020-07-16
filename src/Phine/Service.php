@@ -10,6 +10,7 @@ Copyright: nanato12
 
 namespace Phine;
 
+use stdClass;
 use Phine\Message;
 
 class Service extends Message {
@@ -32,14 +33,39 @@ class Service extends Message {
     function getProfileFromRoom($roomId, $userId) {
         return $this->client->getRoomMemberProfile($roomId, $userId);
     }
-    function getGroupMemberIds($groupId, $start=null) {
-        return $this->client->getGroupMemberIds($groupId, $start=null);
+    function getGroup($groupId) {
+        $obj = $this->getGroupSummary($groupId);
+        $groupInfo = json_decode($obj->getRawBody(), true);
+        $obj = $this->getGroupMembersCount($groupId);
+        $groupInfo2 = json_decode($obj->getRawBody(), true);
+        if (!array_key_exists('groupId', $groupInfo)) {
+            $group = null;
+        } else {
+            $group = new stdClass;
+            $group->id = $groupInfo['groupId'];
+            $group->name = $groupInfo['groupName'];
+            $group->pictureUrl = $groupInfo['pictureUrl'];
+            $group->membersCount = $groupInfo2['count'];
+        }
+        return $group;
     }
-    function getRoomMemberIds($roomId, $start=null) {
-        return $this->client->getRoomMemberIds($roomId, $start=null);
+    function getGroupSummary($groupId) {
+        return $this->client->getGroupSummary($groupId);
+    }
+    function getGroupMembersCount($groupId) {
+        return $this->client->getGroupMembersCount($groupId);
+    }
+    function getGroupMemberIds($groupId, $start=null) {
+        return $this->client->getGroupMemberIds($groupId, $start);
     }
     function getAllGroupMemberIds($groupId) {
         return $this->client->getAllGroupMemberIds($groupId);
+    }
+    function getRoomMembersCount($roomId) {
+        return $this->client->getRoomMembersCount($roomId);
+    }
+    function getRoomMemberIds($roomId, $start=null) {
+        return $this->client->getRoomMemberIds($roomId, $start);
     }
     function getAllRoomMemberIds($roomId) {
         return $this->client->getAllRoomMemberIds($roomId);
