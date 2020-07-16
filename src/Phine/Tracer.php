@@ -12,6 +12,7 @@ Copyright: nanato12
 
 namespace Phine;
 
+use Exception;
 use Phine\Types;
 
 class Tracer extends Types {
