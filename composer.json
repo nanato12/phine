@@ -6,7 +6,7 @@
     "keywords": ["phine"],
     "minimum-stability": "stable",
     "require": {
-        "linecorp/line-bot-sdk": "^4.4"
+        "linecorp/line-bot-sdk": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
