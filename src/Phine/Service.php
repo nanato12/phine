@@ -10,6 +10,7 @@ Copyright: nanato12
 
 namespace Phine;
 
+use Exception;
 use stdClass;
 use Phine\Message;
 
@@ -24,6 +25,35 @@ class Service extends Message {
     }
 
     // main function
+    function getProfileV2($userId) {
+        $obj = $this->client->getProfile($userId);
+        $profileInfo = json_decode($obj->getRawBody(), true);
+        $profile = new stdClass;
+        $profile->id = $profileInfo['userId'];
+        $profile->name = $profileInfo['displayName'];
+        $profile->language = $profileInfo['language'];
+        $profile->pictureUrl = $profileInfo['pictureUrl'];
+        $profile->statusMessage = $profileInfo['statusMessage'];
+        return $profile;
+    }
+    function getProfileFromGroupV2($groupId, $userId) {
+        $obj = $this->client->getGroupMemberProfile($groupId, $userId);
+        $profileInfo = json_decode($obj->getRawBody(), true);
+        $profile = new stdClass;
+        $profile->id = $profileInfo['userId'];
+        $profile->name = $profileInfo['displayName'];
+        $profile->pictureUrl = $profileInfo['pictureUrl'];
+        return $profile;
+    }
+    function getProfileFromRoomV2($roomId, $userId) {
+        $obj = $this->client->getRoomMemberProfile($roomId, $userId);
+        $profileInfo = json_decode($obj->getRawBody(), true);
+        $profile = new stdClass;
+        $profile->id = $profileInfo['userId'];
+        $profile->name = $profileInfo['displayName'];
+        $profile->pictureUrl = $profileInfo['pictureUrl'];
+        return $profile;
+    }
     function getProfile($userId) {
         return $this->client->getProfile($userId);
     }
@@ -70,8 +100,11 @@ class Service extends Message {
     function getAllRoomMemberIds($roomId) {
         return $this->client->getAllRoomMemberIds($roomId);
     }
+    function getMessageContent($messageId) {
+        return $this->client->getMessageContent($messageId);
+    }
     function saveMessageContent($messageId, $fileName=null) {
-        $content = $this->client->getMessageContent($messageId);
+        $content = $this->getMessageContent($messageId);
         $headers = $content->getHeaders();
         if (is_null($fileName)) {
             $fileInfo = explode('/', $headers['Content-Type']);
@@ -87,6 +120,9 @@ class Service extends Message {
 
     // send message function
     function replyMessage($messages) {
+        if (count($messages) > 5) {
+            throw new Exception('replyMessage: You can send up to 5 messages at once.');
+        }
         return $this->client->replyMessage(
             $this->replyToken,
             $this->createMultiMessage($messages)
