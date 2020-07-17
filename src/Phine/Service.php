@@ -28,30 +28,46 @@ class Service extends Message {
     function getProfileV2($userId) {
         $obj = $this->client->getProfile($userId);
         $profileInfo = json_decode($obj->getRawBody(), true);
-        $profile = new stdClass;
-        $profile->id = $profileInfo['userId'];
-        $profile->name = $profileInfo['displayName'];
-        $profile->language = $profileInfo['language'];
-        $profile->pictureUrl = $profileInfo['pictureUrl'];
-        $profile->statusMessage = $profileInfo['statusMessage'];
+        if (!array_key_exists('userId', $profileInfo)) {
+            $profile = null;
+        } else {
+            $profile = new stdClass;
+            $profile->id = $profileInfo['userId'];
+            $profile->name = $profileInfo['displayName'];
+            $profile->language = $profileInfo['language'];
+            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            $profile->statusMessage = $profileInfo['statusMessage'];
+        }
         return $profile;
     }
     function getProfileFromGroupV2($groupId, $userId) {
         $obj = $this->client->getGroupMemberProfile($groupId, $userId);
         $profileInfo = json_decode($obj->getRawBody(), true);
-        $profile = new stdClass;
-        $profile->id = $profileInfo['userId'];
-        $profile->name = $profileInfo['displayName'];
-        $profile->pictureUrl = $profileInfo['pictureUrl'];
+        if (!array_key_exists('userId', $profileInfo)) {
+            $profile = null;
+        } else {
+            $profile = new stdClass;
+            $profile->id = $profileInfo['userId'];
+            $profile->name = $profileInfo['displayName'];
+            $profile->language = null;
+            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            $profile->statusMessage = null;
+        }
         return $profile;
     }
     function getProfileFromRoomV2($roomId, $userId) {
         $obj = $this->client->getRoomMemberProfile($roomId, $userId);
         $profileInfo = json_decode($obj->getRawBody(), true);
-        $profile = new stdClass;
-        $profile->id = $profileInfo['userId'];
-        $profile->name = $profileInfo['displayName'];
-        $profile->pictureUrl = $profileInfo['pictureUrl'];
+        if (!array_key_exists('userId', $profileInfo)) {
+            $profile = null;
+        } else {
+            $profile = new stdClass;
+            $profile->id = $profileInfo['userId'];
+            $profile->name = $profileInfo['displayName'];
+            $profile->language = null;
+            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            $profile->statusMessage = null;
+        }
         return $profile;
     }
     function getProfile($userId) {
