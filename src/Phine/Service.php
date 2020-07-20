@@ -317,7 +317,7 @@ class Service extends Message {
     }
 
     function sendNarrowcast($message, $recipient=NULL, $demographicFilter=NULL, $limit=NULL) {
-        return $this->client->sendNarrowcast($message, $recipient=NULL, $demographicFilter=NULL, $limit=NULL);
+        return $this->client->sendNarrowcast($message, $recipient, $demographicFilter, $limit);
     }
     function getNarrowcastProgress($requestId) {
         return $this->client->getNarrowcastProgress($requestId);
