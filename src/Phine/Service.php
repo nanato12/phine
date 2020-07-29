@@ -35,7 +35,12 @@ class Service extends Message {
             $profile->id = $profileInfo['userId'];
             $profile->name = $profileInfo['displayName'];
             $profile->language = $profileInfo['language'];
-            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            if (array_key_exists('pictureUrl', $profileInfo)) {
+                $profile->pictureUrl = $profileInfo['pictureUrl'];
+            }
+            else {
+                $profile->pictureUrl = null;
+            }
             $profile->statusMessage = $profileInfo['statusMessage'];
         }
         return $profile;
@@ -50,7 +55,12 @@ class Service extends Message {
             $profile->id = $profileInfo['userId'];
             $profile->name = $profileInfo['displayName'];
             $profile->language = null;
-            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            if (array_key_exists('pictureUrl', $profileInfo)) {
+                $profile->pictureUrl = $profileInfo['pictureUrl'];
+            }
+            else {
+                $profile->pictureUrl = null;
+            }
             $profile->statusMessage = null;
         }
         return $profile;
@@ -65,7 +75,12 @@ class Service extends Message {
             $profile->id = $profileInfo['userId'];
             $profile->name = $profileInfo['displayName'];
             $profile->language = null;
-            $profile->pictureUrl = $profileInfo['pictureUrl'];
+            if (array_key_exists('pictureUrl', $profileInfo)) {
+                $profile->pictureUrl = $profileInfo['pictureUrl'];
+            }
+            else {
+                $profile->pictureUrl = null;
+            }
             $profile->statusMessage = null;
         }
         return $profile;
@@ -90,7 +105,12 @@ class Service extends Message {
             $group = new stdClass;
             $group->id = $groupInfo['groupId'];
             $group->name = $groupInfo['groupName'];
-            $group->pictureUrl = $groupInfo['pictureUrl'];
+            if (array_key_exists('pictureUrl', $groupInfo)) {
+                $group->pictureUrl = $groupInfo['pictureUrl'];
+            }
+            else {
+                $group->pictureUrl = null;
+            }
             $group->membersCount = $groupInfo2['count'];
         }
         return $group;
