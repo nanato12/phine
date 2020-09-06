@@ -41,7 +41,12 @@ class Service extends Message {
             else {
                 $profile->pictureUrl = null;
             }
-            $profile->statusMessage = $profileInfo['statusMessage'];
+            if (array_key_exists('statusMessage', $profileInfo)) {
+                $profile->statusMessage = $profileInfo['statusMessage'];
+            }
+            else {
+                $profile->statusMessage = null;
+            }
         }
         return $profile;
     }
