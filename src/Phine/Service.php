@@ -34,7 +34,12 @@ class Service extends Message {
             $profile = new stdClass;
             $profile->id = $profileInfo['userId'];
             $profile->name = $profileInfo['displayName'];
-            $profile->language = $profileInfo['language'];
+            if (array_key_exists('language', $profileInfo)) {
+                $profile->language = $profileInfo['language'];
+            }
+            else {
+                $profile->pictureUrl = null;
+            }
             if (array_key_exists('pictureUrl', $profileInfo)) {
                 $profile->pictureUrl = $profileInfo['pictureUrl'];
             }
