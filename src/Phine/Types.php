@@ -15,28 +15,30 @@ namespace Phine;
 
 class Types {
 
-    public $eventTypes = array(
-        'LINE\LINEBot\Event\AccountLinkEvent' => 'AccountLinkEvent',
-        'LINE\LINEBot\Event\BeaconDetectionEvent' => 'BeaconDetectionEvent',
-        'LINE\LINEBot\Event\FollowEvent' => 'FollowEvent',
-        'LINE\LINEBot\Event\JoinEvent' => 'JoinEvent',
-        'LINE\LINEBot\Event\LeaveEvent' => 'LeaveEvent',
-        'LINE\LINEBot\Event\MemberJoinEvent' => 'MemberJoinEvent',
-        'LINE\LINEBot\Event\MemberLeaveEvent' => 'MemberLeaveEvent',
-        'LINE\LINEBot\Event\MessageEvent' => 'MessageEvent',
-        'LINE\LINEBot\Event\MessageEvent\AudioMessage' => 'AudioMessage',
-        'LINE\LINEBot\Event\MessageEvent\FileMessage' => 'FileMessage',
-        'LINE\LINEBot\Event\MessageEvent\ImageMessage' => 'ImageMessage',
-        'LINE\LINEBot\Event\MessageEvent\LocationMessage' => 'LocationMessage',
-        'LINE\LINEBot\Event\MessageEvent\StickerMessage' => 'StickerMessage',
-        'LINE\LINEBot\Event\MessageEvent\TextMessage' => 'TextMessage',
-        'LINE\LINEBot\Event\MessageEvent\UnknownMessage' => 'UnknownMessage',
-        'LINE\LINEBot\Event\MessageEvent\VideoMessage' => 'VideoMessage',
-        'LINE\LINEBot\Event\PostbackEvent' => 'PostbackEvent',
-        'LINE\LINEBot\Event\ThingsEvent' => 'ThingsEvent',
-        'LINE\LINEBot\Event\UnfollowEvent' => 'UnfollowEvent',
-        'LINE\LINEBot\Event\UnknownEvent' => 'UnknownEvent'
-    );
+    public $eventTypes = [
+        'LINE\LINEBot\Event\AccountLinkEvent' => Config::EVENT_ACCOUNT_LINK,
+        'LINE\LINEBot\Event\BeaconDetectionEvent' => Config::EVENT_BEACON_DETECTION,
+        'LINE\LINEBot\Event\ThingsEvent' => Config::EVENT_THINGS,
+        'LINE\LINEBot\Event\FollowEvent' => Config::EVENT_FOLLOW,
+        'LINE\LINEBot\Event\UnfollowEvent' => Config::EVENT_UNFOLLOW,
+        'LINE\LINEBot\Event\PostbackEvent' => Config::EVENT_POSTBACK,
+        'LINE\LINEBot\Event\JoinEvent' => Config::EVENT_JOIN,
+        'LINE\LINEBot\Event\LeaveEvent' => Config::EVENT_LEAVE,
+        'LINE\LINEBot\Event\MemberJoinEvent' => Config::EVENT_MEMBER_JOIN,
+        'LINE\LINEBot\Event\MemberLeaveEvent' => Config::EVENT_MEMBER_LEAVE,
+        'LINE\LINEBot\Event\MessageEvent' => Config::EVENT_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\TextMessage' => Config::EVENT_TEXT_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\ImageMessage' => Config::EVENT_IMAGE_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\VideoMessage' => Config::EVENT_VIDEO_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\AudioMessage' => Config::EVENT_AUDIO_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\FileMessage' => Config::EVENT_FILE_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\StickerMessage' => Config::EVENT_STICKER_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\LocationMessage' => Config::EVENT_LOCATION_MESSAGE,
+        'LINE\LINEBot\Event\MessageEvent\UnknownMessage' => Config::EVENT_UNKNOWN_MESSAGE,
+        'LINE\LINEBot\Event\UnsendEvent' => Config::EVENT_UNSEND_MESSAGE,
+        'LINE\LINEBot\Event\VideoPlayCompleteEvent' => Config::EVENT_VIDEO_PLAY_COMPLETE,
+        'LINE\LINEBot\Event\UnknownEvent' => Config::EVENT_UNKNOWN,
+    ];
 }
 
 ?>
