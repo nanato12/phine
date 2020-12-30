@@ -13,8 +13,8 @@ Copyright: nanato12
 
 namespace Phine;
 
-class Types {
-
+class Types
+{
     public $eventTypes = [
         'LINE\LINEBot\Event\AccountLinkEvent' => Config::EVENT_ACCOUNT_LINK,
         'LINE\LINEBot\Event\BeaconDetectionEvent' => Config::EVENT_BEACON_DETECTION,
@@ -40,5 +40,3 @@ class Types {
         'LINE\LINEBot\Event\UnknownEvent' => Config::EVENT_UNKNOWN,
     ];
 }
-
-?>

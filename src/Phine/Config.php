@@ -8,8 +8,8 @@ Copyright: nanato12
 
 namespace Phine;
 
-class Config {
-
+class Config
+{
     // ACCOUNT EVENT
     const EVENT_ACCOUNT_LINK = 'AccountLinkEvent';
     const EVENT_BEACON_DETECTION = 'BeaconDetectionEvent';
@@ -42,5 +42,3 @@ class Config {
     const EVENT_VIDEO_PLAY_COMPLETE = 'VideoPlayCompleteEvent';
     const EVENT_UNKNOWN = 'UnknownEvent';
 }
-
-?>

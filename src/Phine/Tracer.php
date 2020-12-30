@@ -13,27 +13,31 @@ Copyright: nanato12
 namespace Phine;
 
 use Exception;
+use LINE\LINEBot\Event\BaseEvent;
 use Phine\Types;
 
-class Tracer extends Types {
-
+class Tracer extends Types
+{
     public $reactionEvents = [];
 
-    function __construct($client, $debug=false) {
+    function __construct(Client $client, bool $debug = false)
+    {
         $this->client = $client;
         $this->debug = $debug;
     }
 
-    function addEvent($eventName, $func) {
+    function addEvent(string $eventName, $func): void
+    {
         $this->reactionEvents[$eventName] = $func;
     }
 
-    function trace($data, $signature) {
+    function trace(string $data, string $signature)
+    {
         try {
             $events = $this->client->parseEventRequest($data, $signature);
             foreach ($events as $event) {
                 if ($this->debug) {
-                    error_log("\n\n".json_encode((array)$event)."\n");
+                    error_log("\n\n" . json_encode((array)$event) . "\n");
                 }
                 $this->client->addReplyToken($event->getReplyToken());
                 $this->execute($event);
@@ -43,13 +47,11 @@ class Tracer extends Types {
         }
     }
 
-    function execute($event) {
+    function execute(BaseEvent $event)
+    {
         $eventType = $this->eventTypes[get_class($event)];
         if (array_key_exists($eventType, $this->reactionEvents)) {
             $this->reactionEvents[$eventType]($this->client, $event);
         }
     }
-
 }
-
-?>

@@ -15,9 +15,10 @@ use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 
 use Phine\Service;
 
-class Client extends Service {
-
-    function __construct($channelSecret, $channelAccessToken) {
+class Client extends Service
+{
+    function __construct(string $channelSecret, string $channelAccessToken)
+    {
         $this->time = microtime(true);
         $this->client = new LINEBot(
             new CurlHTTPClient($channelAccessToken),
@@ -26,13 +27,13 @@ class Client extends Service {
         $this->initialize();
     }
 
-    function initialize() {
+    function initialize(): void
+    {
         parent::__construct($this);
     }
 
-    function addReplyToken($replyToken) {
+    function addReplyToken(string $replyToken): void
+    {
         $this->setReplyToken($replyToken);
     }
 }
-
-?>
