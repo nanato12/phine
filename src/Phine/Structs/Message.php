@@ -11,7 +11,7 @@ Copyright: nanato12
 
 */
 
-namespace Phine;
+namespace Phine\Structs;
 
 use Exception;
 

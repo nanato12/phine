@@ -11,10 +11,10 @@ Copyright: nanato12
 namespace Phine;
 
 use Exception;
+use LINE\LINEBot;
 use stdClass;
-use Phine\Message;
 
-class Service extends Message
+class Service extends LINEBot
 {
 
     function __construct($client)
