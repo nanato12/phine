@@ -10,13 +10,14 @@ Copyright: nanato12
 
 */
 
-namespace Phine;
+namespace Phine\Api;
 
 use Exception;
 use LINE\LINEBot\Event\BaseEvent;
-use Phine\Types;
+use Phine\Client;
+use Phine\Consts\Type;
 
-class Tracer extends Types
+class Tracer
 {
     public $reactionEvents = [];
 
@@ -49,7 +50,7 @@ class Tracer extends Types
 
     function execute(BaseEvent $event)
     {
-        $eventType = $this->eventTypes[get_class($event)];
+        $eventType = Type::EVENT[get_class($event)];
         if (array_key_exists($eventType, $this->reactionEvents)) {
             $this->reactionEvents[$eventType]($this->client, $event);
         }
