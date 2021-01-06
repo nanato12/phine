@@ -2,7 +2,5 @@
 composer.lock
 composer.phar
 account.json
-localtest.sh
-index.php
 tests/
 content/
