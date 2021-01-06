@@ -59,6 +59,8 @@ class Tracer implements ITracer
      *
      * @param string $eventName イベント名
      * @param string $func      関数名
+     *
+     * @return void
      */
     function addEvent(string $eventName, $func): void
     {
@@ -70,6 +72,8 @@ class Tracer implements ITracer
      *
      * @param string $data      リクエストボディ
      * @param string $signature シグネチャ
+     *
+     * @return void
      */
     function trace(string $data, string $signature): void
     {
@@ -87,6 +91,8 @@ class Tracer implements ITracer
      * ハンドラを実行する関数
      *
      * @param BaseEvent $event イベント
+     *
+     * @return void
      */
     function execute(BaseEvent $event): void
     {
