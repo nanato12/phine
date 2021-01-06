@@ -25,117 +25,130 @@ namespace Phine\Consts;
  */
 class Event
 {
-    // ACCOUNT EVENT
-    /**
-     * アカウント連携イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#account-link-event
-     */
-    const ACCOUNT_LINK = 'AccountLinkEvent';
-    /**
-     * ビーコンイベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#beacon-event
-     */
-    const BEACON_DETECTION = 'BeaconDetectionEvent';
-    /**
-     * LINE Thingsシナリオ実行イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#scenario-result-event
-     */
-    const THINGS = 'ThingsEvent';
-
-    // BOT EVENT
-    /**
-     * フォローイベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#follow-event
-     */
-    const FOLLOW = 'FollowEvent';
-    /**
-     * フォロー解除イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#unfollow-event
-     */
-    const UNFOLLOW = 'UnfollowEvent';
-    /**
-     * ポストバックイベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#postback-event
-     */
-    const POSTBACK = 'PostbackEvent';
-
-    // GROUP | ROOM EVENT
-    /**
-     * 参加イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#join-event
-     */
-    const JOIN = 'JoinEvent';
-    /**
-     * 退出イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#leave-event
-     */
-    const LEAVE = 'LeaveEvent';
-    /**
-     * メンバー参加イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#member-joined-event
-     */
-    const MEMBER_JOIN = 'MemberJoinEvent';
-    /**
-     * メンバー退出イベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#member-left-event
-     */
-    const MEMBER_LEAVE = 'MemberLeaveEvent';
-
-    // MESSAGE EVENT
     /**
      * メッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#message-event
      */
-    const MESSAGE = 'MessageEvent';
+    const MESSAGE = "MessageEvent";
+
     /**
      * テキストメッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-text
      */
-    const TEXT_MESSAGE = 'TextMessage';
+    const TEXT_MESSAGE = "TextMessage";
+
     /**
      * 画像メッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-image
      */
-    const IMAGE_MESSAGE = 'ImageMessage';
+    const IMAGE_MESSAGE = "ImageMessage";
+
     /**
      * 動画メッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-video
      */
-    const VIDEO_MESSAGE = 'VideoMessage';
+    const VIDEO_MESSAGE = "VideoMessage";
+
     /**
      * 音声メッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-audio
      */
-    const AUDIO_MESSAGE = 'AudioMessage';
+    const AUDIO_MESSAGE = "AudioMessage";
+
     /**
      * ファイルメッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-file
      */
-    const FILE_MESSAGE = 'FileMessage';
-    /**
-     * スタンプメッセージイベント
-     * @link https://developers.line.biz/ja/reference/messaging-api/#wh-sticker
-     */
-    const STICKER_MESSAGE = 'StickerMessage';
+    const FILE_MESSAGE = "FileMessage";
+
     /**
      * 位置情報メッセージイベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#wh-location
      */
-    const LOCATION_MESSAGE = 'LocationMessage';
-    /** 不明メッセージイベント */
-    const UNKNOWN_MESSAGE = 'UnknownMessage';
+    const LOCATION_MESSAGE = "LocationMessage";
+
+    /**
+     * スタンプメッセージイベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#wh-sticker
+     */
+    const STICKER_MESSAGE = "StickerMessage";
+
     /**
      * 送信取消イベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#unsend-event
      */
-    const UNSEND_MESSAGE = 'UnsendEvent';
+    const UNSEND_MESSAGE = "UnsendEvent";
 
-    // OTHER
     /**
-     * 動画再生完了イベント
+     * フォローイベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#follow-event
+     */
+    const FOLLOW = "FollowEvent";
+
+    /**
+     * フォロー解除イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#unfollow-event
+     */
+    const UNFOLLOW = "UnfollowEvent";
+
+    /**
+     * 参加イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#join-event
+     */
+    const JOIN = "JoinEvent";
+
+    /**
+     * 退出イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#leave-event
+     */
+    const LEAVE = "LeaveEvent";
+
+    /**
+     * メンバー参加イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#member-joined-event
+     */
+    const MEMBER_JOIN = "MemberJoinEvent";
+
+    /**
+     * メンバー退出イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#member-left-event
+     */
+    const MEMBER_LEAVE = "MemberLeaveEvent";
+
+    /**
+     * ポストバックイベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#postback-event
+     */
+    const POSTBACK = "PostbackEvent";
+
+    /**
+     * 動画視聴完了イベント
      * @link https://developers.line.biz/ja/reference/messaging-api/#video-viewing-complete
      */
-    const VIDEO_PLAY_COMPLETE = 'VideoPlayCompleteEvent';
+    const VIDEO_PLAY_COMPLETE = "VideoPlayCompleteEvent";
+
+    /**
+     * ビーコンイベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#beacon-event
+     */
+    const BEACON_DETECTION = "BeaconDetectionEvent";
+
+    /**
+     * アカウント連携イベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#account-link-event
+     */
+    const ACCOUNT_LINK = "AccountLinkEvent";
+
+    /**
+     * LINE Thingsイベント
+     * @link https://developers.line.biz/ja/reference/messaging-api/#device-link-event デバイス連携
+     * @link https://developers.line.biz/ja/reference/messaging-api/#device-unlink-event デバイス連携解除
+     * @link https://developers.line.biz/ja/reference/messaging-api/#scenario-result-event シナリオ実行
+     */
+    const THINGS = "ThingsEvent";
+
     /** 不明イベント */
-    const UNKNOWN = 'UnknownEvent';
+    const UNKNOWN = "UnknownEvent";
+    /** 不明メッセージイベント */
+    const UNKNOWN_MESSAGE = "UnknownMessage";
 }
