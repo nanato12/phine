@@ -18,25 +18,19 @@
 
 namespace Phine;
 
-use LINE\LINEBot\QuickReplyBuilder\QuickReplyMessageBuilder;
-use LINE\LINEBot\SenderBuilder\SenderMessageBuilder;
 use Phine\Api\Service;
 
 /**
  * Phine client object (LINE Messaging API).
  *
- * @property float                    $time       インスタンスが作成された時間
- * @property SenderMessageBuilder     $sender     Senderインスタンス
- * @property QuickReplyMessageBuilder $quickReply quickReplyインスタンス
+ * @property float $time インスタンスが作成された時間
  */
 class Client extends Service
 {
     public $time = 0;
-    public $sender = null;
-    public $quickReply = null;
 
     /**
-     * @param string $channelSecret チャンネルシークレト
+     * @param string $channelSecret      チャンネルシークレト
      * @param string $channelAccessToken アクセストークン
      */
     function __construct(string $channelSecret, string $channelAccessToken)

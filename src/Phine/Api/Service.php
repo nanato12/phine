@@ -43,7 +43,6 @@ use Phine\Structs\Profile;
 
 interface IService
 {
-
     function setReplyToken(string $replyToken): void;
     function getProfileV2(string $userId): ?Profile;
     function getProfileFromGroup(string $userId, string $groupId): ?Profile;
@@ -102,6 +101,8 @@ class Service extends LINEBot implements IService
      * リプライトークンを設定する関数
      *
      * @param string $replyToken リプライトークン
+     *
+     * @return void
      */
     function setReplyToken(string $replyToken): void
     {
@@ -114,7 +115,7 @@ class Service extends LINEBot implements IService
      *
      * @param string $userId ユーザーID
      *
-     * @return Profile|null プロフィール情報
+     * @return Profile|null
      */
     function getProfileV2(string $userId): ?Profile
     {
@@ -137,7 +138,7 @@ class Service extends LINEBot implements IService
      * @param string $userId  ユーザーID
      * @param string $groupId グループID
      *
-     * @return Profile|null プロフィール情報
+     * @return Profile|null
      *
      * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
      * - language
@@ -164,7 +165,7 @@ class Service extends LINEBot implements IService
      * @param string $userId ユーザーID
      * @param string $roomId ルームID
      *
-     * @return Profile|null プロフィール情報
+     * @return Profile|null
      *
      * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
      * - language
@@ -190,7 +191,7 @@ class Service extends LINEBot implements IService
      *
      * @param string $groupId グループID
      *
-     * @return Group|null グループ情報
+     * @return Group|null
      */
     function getGroup(string $groupId): ?Group
     {
