@@ -16,26 +16,22 @@
  * limitations under the License.
  */
 
-namespace Phine;
-
-use Phine\Api\Service;
+namespace Phine\Structs;
 
 /**
- * Phine client object (LINE Messaging API).
+ * User profile object
  *
- * @property float $time インスタンスが作成された時間
+ * @property string|null $userId        ユーザーID
+ * @property string|null $displayName   表示名
+ * @property string|null $pictureUrl    プロフィール画像URL
+ * @property string|null $language      使用言語
+ * @property string|null $statusMessage ステータスメッセージ
  */
-class Client extends Service
+class Profile
 {
-    public $time = 0;
-
-    /**
-     * @param string $channelSecret      チャンネルシークレト
-     * @param string $channelAccessToken アクセストークン
-     */
-    function __construct(string $channelSecret, string $channelAccessToken)
-    {
-        $this->time = microtime(true);
-        parent::__construct($channelSecret, $channelAccessToken);
-    }
+    public $userId = null;
+    public $displayName = null;
+    public $pictureUrl = null;
+    public $language = null;
+    public $statusMessage = null;
 }

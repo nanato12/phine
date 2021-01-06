@@ -16,26 +16,20 @@
  * limitations under the License.
  */
 
-namespace Phine;
-
-use Phine\Api\Service;
+namespace Phine\Structs;
 
 /**
- * Phine client object (LINE Messaging API).
+ * Group object
  *
- * @property float $time インスタンスが作成された時間
+ * @property string|null $groupId    グループID
+ * @property string|null $groupName  グループ名
+ * @property string|null $pictureUrl グループ画像URL
+ * @property int|null    $count      メンバー人数（公式アカウントは含めない, LINE WORKSなども）
  */
-class Client extends Service
+class Group
 {
-    public $time = 0;
-
-    /**
-     * @param string $channelSecret      チャンネルシークレト
-     * @param string $channelAccessToken アクセストークン
-     */
-    function __construct(string $channelSecret, string $channelAccessToken)
-    {
-        $this->time = microtime(true);
-        parent::__construct($channelSecret, $channelAccessToken);
-    }
+    public $groupId = null;
+    public $groupName = null;
+    public $pictureUrl = null;
+    public $count = null;
 }
