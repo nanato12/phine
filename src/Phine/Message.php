@@ -15,7 +15,6 @@ namespace Phine;
 
 use Exception;
 
-use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\MessageBuilder\VideoMessageBuilder;
 use LINE\LINEBot\MessageBuilder\AudioMessageBuilder;
@@ -35,52 +34,73 @@ use LINE\LINEBot\TemplateActionBuilder\CameraRollTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\LocationTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\DatetimePickerTemplateActionBuilder;
-use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 
-class Message {
-
+class Message
+{
     public $quickReply = null;
     public $sender = null;
 
     public $quickReplyData = null;
     public $senderData = null;
 
-    function createTextMessage($text) {
+    function createTextMessage(string $text): RawMessageBuilder
+    {
         $rawContent = [
             'type' => 'text',
             'text' => $text
         ];
         return $this->createRawMessage($rawContent);
     }
-    function createImageMessage($imageUrl) {
+
+    function createImageMessage(string $imageUrl): ImageMessageBuilder
+    {
         return new ImageMessageBuilder($imageUrl, $imageUrl, $this->quickReply, $this->sender);
     }
-    function createVideoMessage($videoContent) {
+
+    function createVideoMessage(array $videoContent): VideoMessageBuilder
+    {
         return new VideoMessageBuilder(
-            $videoContent['contentUrl'], $videoContent['previewUrl'],
-            $this->quickReply, $this->sender
+            $videoContent['contentUrl'],
+            $videoContent['previewUrl'],
+            $this->quickReply,
+            $this->sender
         );
     }
-    function createAudioMessage($audioContent) {
+
+    function createAudioMessage(array $audioContent): AudioMessageBuilder
+    {
         return new AudioMessageBuilder(
-            $audioContent['contentUrl'], $audioContent['duration'],
-            $this->quickReply, $this->sender
+            $audioContent['contentUrl'],
+            $audioContent['duration'],
+            $this->quickReply,
+            $this->sender
         );
     }
-    function createStickerMessage($stickerContent) {
+
+    function createStickerMessage(array $stickerContent): StickerMessageBuilder
+    {
         return new StickerMessageBuilder(
-            $stickerContent['packageId'], $stickerContent['stickerId'],
-            $this->quickReply, $this->sender
+            $stickerContent['packageId'],
+            $stickerContent['stickerId'],
+            $this->quickReply,
+            $this->sender
         );
     }
-    function createLocationMessage($locationContent) {
+
+    function createLocationMessage(array $locationContent): LocationMessageBuilder
+    {
         return new LocationMessageBuilder(
-            $locationContent['title'], $locationContent['address'],
-            $locationContent['latitude'], $locationContent['longitude'],
-            $this->quickReply, $this->sender
+            $locationContent['title'],
+            $locationContent['address'],
+            $locationContent['latitude'],
+            $locationContent['longitude'],
+            $this->quickReply,
+            $this->sender
         );
     }
-    function createFlexMessage($flexContent, $altText='Flex Message') {
+
+    function createFlexMessage(array $flexContent, string $altText = 'Flex Message'): RawMessageBuilder
+    {
         $rawContent = [
             'type' => 'flex',
             'altText' => $altText,
@@ -88,17 +108,21 @@ class Message {
         ];
         return $this->createRawMessage($rawContent);
     }
-    function createRawMessage($content) {
-        if ( !is_null($this->quickReplyData) ){
+
+    function createRawMessage(array $content): RawMessageBuilder
+    {
+        if (!is_null($this->quickReplyData)) {
             $content['quickReply'] = $this->quickReplyData;
         }
-        if ( !is_null($this->senderData) ) {
+        if (!is_null($this->senderData)) {
             $content['sender'] = $this->senderData;
         }
         return new RawMessageBuilder($content);
     }
-    function createMultiMessage($messages) {
-        if ( count($messages) > 5 ) {
+
+    function createMultiMessage(array $messages): MultiMessageBuilder
+    {
+        if (count($messages) > 5) {
             throw new Exception('send messages limit 5 at onece.');
         }
         $multiMessage = new MultiMessageBuilder();
@@ -107,33 +131,38 @@ class Message {
         }
         return $multiMessage;
     }
-    function setQuickReply($items) {
+
+    function setQuickReply(array $items): void
+    {
         $buttons = [];
         foreach ($items as $item) {
             $item_action = $item['action'];
             switch ($item_action['type']) {
                 case 'message':
                     $action = new MessageTemplateActionBuilder($item_action['label'], $item_action['text']);
-                break;
+                    break;
                 case 'camera':
                     $action = new CameraTemplateActionBuilder($item_action['label']);
-                break;
+                    break;
                 case 'cameraRoll':
                     $action = new CameraRollTemplateActionBuilder($item_action['label']);
-                break;
+                    break;
                 case 'location':
                     $action = new LocationTemplateActionBuilder($item_action['label']);
-                break;
+                    break;
                 case 'postback':
                     $action = new PostbackTemplateActionBuilder($item_action['label'], $item_action['data']);
-                break;
+                    break;
                 case 'datetimepicker':
                     $action = new DatetimePickerTemplateActionBuilder(
-                        $item_action['label'], $item_action['data'],
-                        $item_action['mode'], $item_action['initial'],
-                        $item_action['max'], $item_action['min']
+                        $item_action['label'],
+                        $item_action['data'],
+                        $item_action['mode'],
+                        $item_action['initial'],
+                        $item_action['max'],
+                        $item_action['min']
                     );
-                break;
+                    break;
                 default:
                     throw new Exception("None action type: '{$item_action['type']}'");
             }
@@ -143,7 +172,9 @@ class Message {
         $this->quickReply = new QuickReplyMessageBuilder($buttons);
         $this->quickReplyData = ['items' => $items];
     }
-    function setSender($name, $iconUrl) {
+
+    function setSender(string $name, string $iconUrl): void
+    {
         $this->sender = new SenderMessageBuilder($name, $iconUrl);
         $this->senderData = [
             'name' => $name,
@@ -151,5 +182,3 @@ class Message {
         ];
     }
 }
-
-?>
