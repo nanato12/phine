@@ -23,11 +23,11 @@ use LINE\LINEBot\SenderBuilder\SenderMessageBuilder;
 use Phine\Api\Service;
 
 /**
- * Phine client (LINE Messaging API).
+ * Phine client object (LINE Messaging API).
  *
- * @property    float   $time インスタンスが作成された時間
- * @property    SenderMessageBuilder    $sender Senderインスタンス
- * @property    QuickReplyMessageBuilder    $quickReply quickReplyインスタンス
+ * @property float                    $time       インスタンスが作成された時間
+ * @property SenderMessageBuilder     $sender     Senderインスタンス
+ * @property QuickReplyMessageBuilder $quickReply quickReplyインスタンス
  */
 class Client extends Service
 {
@@ -36,8 +36,8 @@ class Client extends Service
     public $quickReply = null;
 
     /**
-     * @param   string  $channelSecret チャンネルシークレト
-     * @param   string  $channelAccessToken アクセストークン
+     * @param string $channelSecret チャンネルシークレト
+     * @param string $channelAccessToken アクセストークン
      */
     function __construct(string $channelSecret, string $channelAccessToken)
     {

@@ -21,10 +21,10 @@ namespace Phine\Structs;
 /**
  * Group object
  *
- * @property    string|null $groupId グループID
- * @property    string|null $groupName グループ名
- * @property    string|null $pictureUrl グループ画像URL
- * @property    int|null    $count メンバー人数（公式アカウントは含めない, LINE WORKSなども）
+ * @property string|null $groupId グループID
+ * @property string|null $groupName グループ名
+ * @property string|null $pictureUrl グループ画像URL
+ * @property int|null    $count メンバー人数（公式アカウントは含めない, LINE WORKSなども）
  */
 class Group
 {

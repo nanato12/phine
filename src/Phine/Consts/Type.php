@@ -1,20 +1,31 @@
 <?php
 
-/*
-
-Bot event type object
-
-LINE Official Bot Event
-https://line.github.io/line-bot-sdk-php/class-LINE.LINEBot.Event.BaseEvent.html
-
-Copyright: nanato12
-
-*/
+/**
+ * Copyright 2020 nanato12
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace Phine\Consts;
 
+/**
+ * Type object
+ *
+ * @link https://line.github.io/line-bot-sdk-php/class-LINE.LINEBot.Event.BaseEvent.html LINE Official Bot Event
+ */
 class Type
 {
+    /** @var array クラスに対するイベント名のリスト */
     const EVENT = [
         'LINE\LINEBot\Event\AccountLinkEvent' => Event::ACCOUNT_LINK,
         'LINE\LINEBot\Event\BeaconDetectionEvent' => Event::BEACON_DETECTION,

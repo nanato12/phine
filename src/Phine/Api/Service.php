@@ -70,11 +70,11 @@ interface IService
 }
 
 /**
- * @property    string|null  $replyToken リプライトークン
- * @property    SenderMessageBuilder|null    $sender Senderインスタンス
- * @property    array|null    $senderData    Senderデータ
- * @property    QuickReplyMessageBuilder|null    $quickReply quickReplyインスタンス
- * @property    array|null    $quickReplyData quickReplyデータ
+ * @property string|null                   $replyToken     リプライトークン
+ * @property SenderMessageBuilder|null     $sender         Senderインスタンス
+ * @property array|null                    $senderData     Senderデータ
+ * @property QuickReplyMessageBuilder|null $quickReply     quickReplyインスタンス
+ * @property array|null                    $quickReplyData quickReplyデータ
  */
 class Service extends LINEBot implements IService
 {
@@ -87,8 +87,8 @@ class Service extends LINEBot implements IService
     /**
      * コンストラクタ
      *
-     * @param   string  $channelSecret チャンネルシークレット
-     * @param   string  $channelAccessToken アクセストークン
+     * @param string $channelSecret      チャンネルシークレット
+     * @param string $channelAccessToken アクセストークン
      */
     function __construct(string $channelSecret, string $channelAccessToken)
     {
@@ -114,7 +114,7 @@ class Service extends LINEBot implements IService
      *
      * @param string $userId ユーザーID
      *
-     * @return null|Profile プロフィール情報
+     * @return Profile|null プロフィール情報
      */
     function getProfileV2(string $userId): ?Profile
     {
@@ -134,10 +134,10 @@ class Service extends LINEBot implements IService
      * グループIDとユーザーIDからプロフィール情報を取得する関数
      * getGroupMemberProfileのラッパー関数
      *
-     * @param string $userId ユーザーID
+     * @param string $userId  ユーザーID
      * @param string $groupId グループID
      *
-     * @return null|Profile プロフィール情報
+     * @return Profile|null プロフィール情報
      *
      * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
      * - language
@@ -164,7 +164,7 @@ class Service extends LINEBot implements IService
      * @param string $userId ユーザーID
      * @param string $roomId ルームID
      *
-     * @return null|Profile プロフィール情報
+     * @return Profile|null プロフィール情報
      *
      * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
      * - language
@@ -190,7 +190,7 @@ class Service extends LINEBot implements IService
      *
      * @param string $groupId グループID
      *
-     * @return null|Group グループ情報
+     * @return Group|null グループ情報
      */
     function getGroup(string $groupId): ?Group
     {
@@ -213,8 +213,10 @@ class Service extends LINEBot implements IService
     /**
      * 画像、動画、音声メッセージのコンテンツデータを保存する関数
      *
-     * @param string $messageId メッセージID
-     * @param string|null $fileName ファイル名
+     * @param string      $messageId メッセージID
+     * @param string|null $fileName  ファイル名
+     *
+     * @return void
      */
     function saveContentByMessageId(string $messageId, ?string $fileName = null): void
     {
@@ -238,7 +240,7 @@ class Service extends LINEBot implements IService
      *
      * @param array $messages メッセージリスト
      *
-     * @return Response レスポンス
+     * @return Response
      */
     function replyMessageV2(array $messages): Response
     {
@@ -288,8 +290,10 @@ class Service extends LINEBot implements IService
     /**
      * 画像メッセージを作成する関数
      *
-     * @param string $contentUrl 画像コンテンツURL
+     * @param string      $contentUrl 画像コンテンツURL
      * @param string|null $previewUrl 画像サムネイルURL（指定しない場合、コンテンツURLが適用）
+     *
+     * @return ImageMessageBuilder
      */
     function createImageMessage(string $contentUrl, ?string $previewUrl = null): ImageMessageBuilder
     {
@@ -326,7 +330,7 @@ class Service extends LINEBot implements IService
      * 音声メッセージを作成する関数
      *
      * @param string $contentUrl 音声コンテンツURL
-     * @param int $duration 音声再生時間
+     * @param int    $duration   音声再生時間
      *
      * @return AudioMessageBuilder
      */
@@ -361,10 +365,10 @@ class Service extends LINEBot implements IService
     /**
      * 位置情報メッセージを作成する関数
      *
-     * @param string $title タイトル
-     * @param string $address 住所
-     * @param float $latitude 緯度
-     * @param float $longitude 経度
+     * @param string $title     タイトル
+     * @param string $address   住所
+     * @param float  $latitude  緯度
+     * @param float  $longitude 経度
      *
      * @return LocationMessageBuilder
      */
@@ -387,8 +391,8 @@ class Service extends LINEBot implements IService
     /**
      * FLEXメッセージを作成する関数
      *
-     * @param array $flexContent flexのデータ
-     * @param string $altText altメッセージ
+     * @param array  $flexContent flexのデータ
+     * @param string $altText     altメッセージ
      *
      * @return RawMessageBuilder
      */
@@ -422,6 +426,8 @@ class Service extends LINEBot implements IService
      * クイックリプライを設定する関数
      *
      * @param array $items クリックリプライの配列
+     *
+     * @return void
      */
     function setQuickReply(array $items): void
     {
@@ -466,8 +472,10 @@ class Service extends LINEBot implements IService
     /**
      * Senderを設定する関数
      *
-     * @param string|null $name 表示名
+     * @param string|null $name    表示名
      * @param string|null $iconUrl アイコンURL
+     *
+     * @return void
      */
     function setSender(?string $name = null, ?string $iconUrl = null): void
     {

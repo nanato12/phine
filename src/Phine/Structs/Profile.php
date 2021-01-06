@@ -21,11 +21,11 @@ namespace Phine\Structs;
 /**
  * User profile object
  *
- * @property    string|null $userId ユーザーID
- * @property    string|null $displayName 表示名
- * @property    string|null $pictureUrl プロフィール画像URL
- * @property    string|null $language 使用言語
- * @property    string|null $statusMessage ステータスメッセージ
+ * @property string|null $userId ユーザーID
+ * @property string|null $displayName 表示名
+ * @property string|null $pictureUrl プロフィール画像URL
+ * @property string|null $language 使用言語
+ * @property string|null $statusMessage ステータスメッセージ
  */
 class Profile
 {
