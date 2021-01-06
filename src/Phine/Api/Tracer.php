@@ -18,43 +18,23 @@
 
 namespace Phine\Api;
 
-use Exception;
 use LINE\LINEBot\Event\BaseEvent;
 use Phine\Client;
 use Phine\Consts\Type;
 
 interface ITracer
 {
-    /**
-     * イベントと呼び出される関数を設定する関数
-     *
-     * @param   string  $eventName イベント名
-     * @param   string  $func 関数名
-     */
     function addEvent(string $eventName, string $func): void;
-
-    /**
-     * トレース関数
-     *
-     * @param   string  $data リクエストボディ
-     * @param   string  $signature シグネチャ
-     */
     function trace(string $data, string $signature): void;
-
-    /**
-     * ハンドラを実行する関数
-     *
-     * @param   BaseEvent   $event イベント
-     */
     function execute(BaseEvent $event): void;
 }
 
 /**
  * Phine tracer
  *
- * @property    Client  $client Phineクライアント
- * @property    array   $reactionEvents 反応イベントリスト
- * @property    bool    $debug デバッグモード
+ * @property Client $client         Phineクライアント
+ * @property array  $reactionEvents 反応イベントリスト
+ * @property bool   $debug          デバッグモード
  */
 class Tracer implements ITracer
 {
@@ -65,8 +45,8 @@ class Tracer implements ITracer
     /**
      * コンストラクタ
      *
-     * @param   Client  $client Phineクライアント
-     * @param   bool    $debug デバッグモード
+     * @param Client $client Phineクライアント
+     * @param bool   $debug  デバッグモード
      */
     function __construct(Client $client, bool $debug = false)
     {
@@ -74,11 +54,23 @@ class Tracer implements ITracer
         $this->debug = $debug;
     }
 
+    /**
+     * イベントと呼び出される関数を設定する関数
+     *
+     * @param string $eventName イベント名
+     * @param string $func      関数名
+     */
     function addEvent(string $eventName, $func): void
     {
         $this->reactionEvents[$eventName] = $func;
     }
 
+    /**
+     * トレース関数
+     *
+     * @param string $data      リクエストボディ
+     * @param string $signature シグネチャ
+     */
     function trace(string $data, string $signature): void
     {
         $events = $this->client->parseEventRequest($data, $signature);
@@ -91,6 +83,11 @@ class Tracer implements ITracer
         }
     }
 
+    /**
+     * ハンドラを実行する関数
+     *
+     * @param BaseEvent $event イベント
+     */
     function execute(BaseEvent $event): void
     {
         $eventType = Type::EVENT[get_class($event)];
