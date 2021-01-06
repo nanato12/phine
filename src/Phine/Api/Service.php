@@ -1,413 +1,480 @@
 <?php
 
-/*
+/**
+ * Copyright 2020 nanato12
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Bot service object
-
-Copyright: nanato12
-
-*/
-
-namespace Phine;
+namespace Phine\Api;
 
 use Exception;
 use LINE\LINEBot;
-use stdClass;
+use LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use LINE\LINEBot\MessageBuilder\AudioMessageBuilder;
+use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
+use LINE\LINEBot\MessageBuilder\LocationMessageBuilder;
+use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\RawMessageBuilder;
+use LINE\LINEBot\MessageBuilder\StickerMessageBuilder;
+use LINE\LINEBot\MessageBuilder\VideoMessageBuilder;
+use LINE\LINEBot\QuickReplyBuilder\ButtonBuilder\QuickReplyButtonBuilder;
+use LINE\LINEBot\QuickReplyBuilder\QuickReplyMessageBuilder;
+use LINE\LINEBot\TemplateActionBuilder\CameraRollTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\CameraTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\DatetimePickerTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\LocationTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
+use LINE\LINEBot\Response;
+use LINE\LINEBot\SenderBuilder\SenderMessageBuilder;
+use Phine\Structs\Group;
+use Phine\Structs\Profile;
 
-class Service extends LINEBot
+interface IService
 {
 
-    function __construct($client)
+    function setReplyToken(string $replyToken): void;
+    function getProfileV2(string $userId): ?Profile;
+    function getProfileFromGroup(string $userId, string $groupId): ?Profile;
+    function getProfileFromRoom(string $userId, string $roomId): ?Profile;
+    function getGroup(string $groupId): ?Group;
+    function saveContentByMessageId(string $messageId, string $fileName = null): void;
+    function replyMessageV2(array $messages): Response;
+    function createRawMessage(array $content): RawMessageBuilder;
+    function createTextMessage(string $text): RawMessageBuilder;
+    function createImageMessage(string $contentUrl, ?string $previewUrl = null): ImageMessageBuilder;
+    function createVideoMessage(string $contentUrl, string $previewUrl): VideoMessageBuilder;
+    function createAudioMessage(string $contentUrl, int $duration): AudioMessageBuilder;
+    function createStickerMessage(string $packageId, string $stickerId): StickerMessageBuilder;
+    function createLocationMessage(
+        string $title,
+        string $address,
+        float $latitude,
+        float $longitude
+    ): LocationMessageBuilder;
+    function createFlexMessage(array $flexContent, string $altText = "Flex Message"): RawMessageBuilder;
+    public static function createMultiMessage(array $messages): MultiMessageBuilder;
+    function setQuickReply(array $items): void;
+    function setSender(?string $name = null, ?string $iconUrl = null): void;
+}
+
+/**
+ * @property    string|null  $replyToken リプライトークン
+ * @property    SenderMessageBuilder|null    $sender Senderインスタンス
+ * @property    array|null    $senderData    Senderデータ
+ * @property    QuickReplyMessageBuilder|null    $quickReply quickReplyインスタンス
+ * @property    array|null    $quickReplyData quickReplyデータ
+ */
+class Service extends LINEBot implements IService
+{
+    private $replyToken = null;
+    private $sender = null;
+    private $senderData = null;
+    private $quickReply = null;
+    private $quickReplyData = null;
+
+    /**
+     * コンストラクタ
+     *
+     * @param   string  $channelSecret チャンネルシークレット
+     * @param   string  $channelAccessToken アクセストークン
+     */
+    function __construct(string $channelSecret, string $channelAccessToken)
     {
-        $this->client = $client->client;
+        parent::__construct(
+            new CurlHTTPClient($channelAccessToken),
+            ["channelSecret" => $channelSecret]
+        );
     }
 
-    function setReplyToken($replyToken)
+    /**
+     * リプライトークンを設定する関数
+     *
+     * @param string $replyToken リプライトークン
+     */
+    function setReplyToken(string $replyToken): void
     {
         $this->replyToken = $replyToken;
     }
 
-    // main function
-    function getProfileV2($userId)
+    /**
+     * ユーザーIDからプロフィール情報を取得する関数
+     * getProfileのラッパー関数
+     *
+     * @param string $userId ユーザーID
+     *
+     * @return null|Profile プロフィール情報
+     */
+    function getProfileV2(string $userId): ?Profile
     {
-        $obj = $this->client->getProfile($userId);
-        $profileInfo = json_decode($obj->getRawBody(), true);
-        if (!array_key_exists('userId', $profileInfo)) {
-            $profile = null;
+        $profileInfo = json_decode(parent::getProfile($userId)->getRawBody(), true);
+        if (array_key_exists("message", $profileInfo)) {
+            return null;
         } else {
-            $profile = new stdClass;
-            $profile->id = $profileInfo['userId'];
-            $profile->name = $profileInfo['displayName'];
-            if (array_key_exists('language', $profileInfo)) {
-                $profile->language = $profileInfo['language'];
-            } else {
-                $profile->pictureUrl = null;
+            $profile = new Profile;
+            foreach ($profileInfo as $key => $value) {
+                $profile->$key = $value;
             }
-            if (array_key_exists('pictureUrl', $profileInfo)) {
-                $profile->pictureUrl = $profileInfo['pictureUrl'];
-            } else {
-                $profile->pictureUrl = null;
-            }
-            if (array_key_exists('statusMessage', $profileInfo)) {
-                $profile->statusMessage = $profileInfo['statusMessage'];
-            } else {
-                $profile->statusMessage = null;
-            }
+            return $profile;
         }
-        return $profile;
     }
-    function getProfileFromGroupV2($groupId, $userId)
+
+    /**
+     * グループIDとユーザーIDからプロフィール情報を取得する関数
+     * getGroupMemberProfileのラッパー関数
+     *
+     * @param string $userId ユーザーID
+     * @param string $groupId グループID
+     *
+     * @return null|Profile プロフィール情報
+     *
+     * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
+     * - language
+     * - statusMessage
+     */
+    function getProfileFromGroup(string $userId, string $groupId): ?Profile
     {
-        $obj = $this->client->getGroupMemberProfile($groupId, $userId);
-        $profileInfo = json_decode($obj->getRawBody(), true);
-        if (!array_key_exists('userId', $profileInfo)) {
-            $profile = null;
+        $profileInfo = json_decode(parent::getGroupMemberProfile($groupId, $userId)->getRawBody(), true);
+        if (array_key_exists("message", $profileInfo)) {
+            return null;
         } else {
-            $profile = new stdClass;
-            $profile->id = $profileInfo['userId'];
-            $profile->name = $profileInfo['displayName'];
-            $profile->language = null;
-            if (array_key_exists('pictureUrl', $profileInfo)) {
-                $profile->pictureUrl = $profileInfo['pictureUrl'];
-            } else {
-                $profile->pictureUrl = null;
+            $profile = new Profile;
+            foreach ($profileInfo as $key => $value) {
+                $profile->$key = $value;
             }
-            $profile->statusMessage = null;
+            return $profile;
         }
-        return $profile;
     }
-    function getProfileFromRoomV2($roomId, $userId)
+
+    /**
+     * ルームIDとユーザーIDからプロフィール情報を取得する関数
+     * getRoomMemberProfileのラッパー関数
+     *
+     * @param string $userId ユーザーID
+     * @param string $roomId ルームID
+     *
+     * @return null|Profile プロフィール情報
+     *
+     * LINE Messaging APIの仕様上、下記2点は必ず *null* になる
+     * - language
+     * - statusMessage
+     */
+    function getProfileFromRoom(string $userId, string $roomId): ?Profile
     {
-        $obj = $this->client->getRoomMemberProfile($roomId, $userId);
-        $profileInfo = json_decode($obj->getRawBody(), true);
-        if (!array_key_exists('userId', $profileInfo)) {
-            $profile = null;
+        $profileInfo = json_decode(parent::getRoomMemberProfile($roomId, $userId)->getRawBody(), true);
+        if (array_key_exists("message", $profileInfo)) {
+            return null;
         } else {
-            $profile = new stdClass;
-            $profile->id = $profileInfo['userId'];
-            $profile->name = $profileInfo['displayName'];
-            $profile->language = null;
-            if (array_key_exists('pictureUrl', $profileInfo)) {
-                $profile->pictureUrl = $profileInfo['pictureUrl'];
-            } else {
-                $profile->pictureUrl = null;
+            $profile = new Profile;
+            foreach ($profileInfo as $key => $value) {
+                $profile->$key = $value;
             }
-            $profile->statusMessage = null;
+            return $profile;
         }
-        return $profile;
     }
-    function getProfile($userId)
+
+    /**
+     * グループ情報を取得する関数
+     * getGroupSummaryとgetGroupMembersCountのラッパー関数
+     *
+     * @param string $groupId グループID
+     *
+     * @return null|Group グループ情報
+     */
+    function getGroup(string $groupId): ?Group
     {
-        return $this->client->getProfile($userId);
-    }
-    function getProfileFromGroup($groupId, $userId)
-    {
-        return $this->client->getGroupMemberProfile($groupId, $userId);
-    }
-    function getProfileFromRoom($roomId, $userId)
-    {
-        return $this->client->getRoomMemberProfile($roomId, $userId);
-    }
-    function getGroup($groupId)
-    {
-        $obj = $this->getGroupSummary($groupId);
-        $groupInfo = json_decode($obj->getRawBody(), true);
-        $obj = $this->getGroupMembersCount($groupId);
-        $groupInfo2 = json_decode($obj->getRawBody(), true);
-        if (!array_key_exists('groupId', $groupInfo)) {
-            $group = null;
+        $groupInfo = json_decode(parent::getGroupSummary($groupId)->getRawBody(), true);
+        $groupInfo2 = json_decode(parent::getGroupMembersCount($groupId)->getRawBody(), true);
+        if (
+            array_key_exists("message", $groupInfo) &&
+            array_key_exists("message", $groupInfo2)
+        ) {
+            return null;
         } else {
-            $group = new stdClass;
-            $group->id = $groupInfo['groupId'];
-            $group->name = $groupInfo['groupName'];
-            if (array_key_exists('pictureUrl', $groupInfo)) {
-                $group->pictureUrl = $groupInfo['pictureUrl'];
-            } else {
-                $group->pictureUrl = null;
+            $profile = new Group;
+            foreach (array_merge($groupInfo, $groupInfo2) as $key => $value) {
+                $profile->$key = $value;
             }
-            $group->membersCount = $groupInfo2['count'];
+            return $profile;
         }
-        return $group;
     }
-    function getGroupSummary($groupId)
+
+    /**
+     * 画像、動画、音声メッセージのコンテンツデータを保存する関数
+     *
+     * @param string $messageId メッセージID
+     * @param string|null $fileName ファイル名
+     */
+    function saveContentByMessageId(string $messageId, ?string $fileName = null): void
     {
-        return $this->client->getGroupSummary($groupId);
-    }
-    function getGroupMembersCount($groupId)
-    {
-        return $this->client->getGroupMembersCount($groupId);
-    }
-    function getGroupMemberIds($groupId, $start = null)
-    {
-        return $this->client->getGroupMemberIds($groupId, $start);
-    }
-    function getAllGroupMemberIds($groupId)
-    {
-        return $this->client->getAllGroupMemberIds($groupId);
-    }
-    function getRoomMembersCount($roomId)
-    {
-        return $this->client->getRoomMembersCount($roomId);
-    }
-    function getRoomMemberIds($roomId, $start = null)
-    {
-        return $this->client->getRoomMemberIds($roomId, $start);
-    }
-    function getAllRoomMemberIds($roomId)
-    {
-        return $this->client->getAllRoomMemberIds($roomId);
-    }
-    function getMessageContent($messageId)
-    {
-        return $this->client->getMessageContent($messageId);
-    }
-    function saveMessageContent($messageId, $fileName = null)
-    {
-        $content = $this->getMessageContent($messageId);
-        $headers = $content->getHeaders();
+        $res = parent::getMessageContent($messageId);
         if (is_null($fileName)) {
-            $fileInfo = explode('/', $headers['Content-Type']);
+            $headers = $res->getHeaders();
+            $fileInfo = explode("/", $headers["Content-Type"]);
             $directory = $fileInfo[0];
             $extention = $fileInfo[1];
             if (!file_exists("content/${directory}")) {
-                mkdir("content/${directory}", 0777, $recursive = true);
+                mkdir("content/${directory}", 0777, true);
             }
             $fileName = "content/${directory}/${messageId}.${extention}";
         }
-        file_put_contents($fileName, $content->getRawBody());
+        file_put_contents($fileName, $res->getRawBody());
     }
 
-    // send message function
-    function replyMessage($messages)
+    /**
+     * リプライメッセージを送信する関数
+     * replyMessageのラッパー関数
+     *
+     * @param array $messages メッセージリスト
+     *
+     * @return Response レスポンス
+     */
+    function replyMessageV2(array $messages): Response
     {
         if (count($messages) > 5) {
-            throw new Exception('replyMessage: You can send up to 5 messages at once.');
+            throw new Exception("You can send up to 5 messages at once.");
         }
-        return $this->client->replyMessage(
+        return parent::replyMessage(
             $this->replyToken,
             $this->createMultiMessage($messages)
         );
     }
-    function replyTextMessage(...$textArray)
+
+    /**
+     * rawメッセージを作成する
+     *
+     * @param array $content 生の配列データ
+     *
+     * @return RawMessageBuilder
+     */
+    function createRawMessage(array $content): RawMessageBuilder
     {
-        $messages = [];
-        foreach ($textArray as $text) {
-            array_push($messages, $this->createTextMessage($text));
+        if (!is_null($this->quickReplyData)) {
+            $content['quickReply'] = $this->quickReplyData;
         }
-        return $this->replyMessage($messages);
-    }
-    function replyImageMessage(...$imageUrlArray)
-    {
-        $messages = [];
-        foreach ($imageUrlArray as $imageUrl) {
-            array_push($messages, $this->createImageMessage($imageUrl));
+        if (!is_null($this->senderData)) {
+            $content['sender'] = $this->senderData;
         }
-        return $this->replyMessage($messages);
-    }
-    function replyVideoMessage(...$videoContentArray)
-    {
-        $messages = [];
-        foreach ($videoContentArray as $videoContent) {
-            array_push($messages, $this->createVideoMessage($videoContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function replyAudioMessage(...$audioContentArray)
-    {
-        $messages = [];
-        foreach ($audioContentArray as $audioContent) {
-            array_push($messages, $this->createAudioMessage($audioContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function replyStickerMessage(...$stickerContentArray)
-    {
-        $messages = [];
-        foreach ($stickerContentArray as $stickerContent) {
-            array_push($messages, $this->createStickerMessage($stickerContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function replyLocationMessage(...$locationContentArray)
-    {
-        $messages = [];
-        foreach ($locationContentArray as $locationContent) {
-            array_push($messages, $this->createLocationMessage($locationContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function replyFlexMessage(...$flexContentArray)
-    {
-        $messages = [];
-        foreach ($flexContentArray as $flexContent) {
-            array_push($messages, $this->createFlexMessage($flexContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function replyRawMessage(...$rawContentArray)
-    {
-        $messages = [];
-        foreach ($rawContentArray as $rawContent) {
-            array_push($messages, $this->createRawMessage($rawContent));
-        }
-        return $this->replyMessage($messages);
-    }
-    function pushMessage($to, $message)
-    {
-        return $this->client->pushMessage($to, $message);
-    }
-    function multicast($toList, $message)
-    {
-        return $this->client->multicast($toList, $message);
-    }
-    function broadcast($message)
-    {
-        return $this->client->broadcast($message);
+        return new RawMessageBuilder($content);
     }
 
-    // bot action
-    function leaveGroup($groupId)
+    /**
+     * テキストメッセージを作成する関数
+     *
+     * @param string $text テキスト
+     *
+     * @return RawMessageBuilder
+     */
+    function createTextMessage(string $text): RawMessageBuilder
     {
-        return $this->client->leaveGroup($groupId);
-    }
-    function leaveRoom($roomId)
-    {
-        return $this->client->leaveRoom($roomId);
-    }
-
-    // rich menu
-    function getRichMenu($richMenuId)
-    {
-        return $this->client->getRichMenu($richMenuId);
-    }
-    function createRichMenu($richMenu)
-    {
-        return $this->client->createRichMenu($richMenu);
-    }
-    function deleteRichMenu($richMenuId)
-    {
-        return $this->client->deleteRichMenu($richMenuId);
-    }
-    function setDefaultRichMenuId($richMenuId)
-    {
-        return $this->client->setDefaultRichMenuId($richMenuId);
-    }
-    function getDefaultRichMenuId()
-    {
-        return $this->client->getDefaultRichMenuId();
-    }
-    function cancelDefaultRichMenuId()
-    {
-        return $this->client->cancelDefaultRichMenuId();
-    }
-    function getRichMenuId($userId)
-    {
-        return $this->client->getRichMenuId($userId);
-    }
-    function linkRichMenu($userId, $richMenuId)
-    {
-        return $this->client->linkRichMenu($userId, $richMenuId);
-    }
-    function bulkLinkRichMenu($userIds, $richMenuId)
-    {
-        return $this->client->bulkLinkRichMenu($userIds, $richMenuId);
-    }
-    function unlinkRichMenu($userId)
-    {
-        return $this->client->unlinkRichMenu($userId);
-    }
-    function bulkUnlinkRichMenu($userIds)
-    {
-        return $this->client->bulkUnlinkRichMenu($userIds);
-    }
-    function downloadRichMenuImage($richMenuId)
-    {
-        return $this->client->downloadRichMenuImage($richMenuId);
-    }
-    function uploadRichMenuImage($richMenuId, $imagePath, $contentType)
-    {
-        return $this->client->uploadRichMenuImage($richMenuId, $imagePath, $contentType);
-    }
-    function getRichMenuList()
-    {
-        return $this->client->getRichMenuList();
+        $rawContent = [
+            "type" => "text",
+            "text" => $text
+        ];
+        return $this->createRawMessage($rawContent);
     }
 
-    // token
-    function createLinkToken($userId)
+    /**
+     * 画像メッセージを作成する関数
+     *
+     * @param string $contentUrl 画像コンテンツURL
+     * @param string|null $previewUrl 画像サムネイルURL（指定しない場合、コンテンツURLが適用）
+     */
+    function createImageMessage(string $contentUrl, ?string $previewUrl = null): ImageMessageBuilder
     {
-        return $this->client->createLinkToken($userId);
-    }
-    function createChannelAccessToken($channelId)
-    {
-        return $this->client->createChannelAccessToken($channelId);
-    }
-    function revokeChannelAccessToken($channelAccessToken)
-    {
-        return $this->client->revokeChannelAccessToken($channelAccessToken);
-    }
-
-    // event
-    function parseEventRequest($body, $signature)
-    {
-        return $this->client->parseEventRequest($body, $signature);
-    }
-
-    function validateSignature($body, $signature)
-    {
-        return $this->client->validateSignature($body, $signature);
+        if (is_null($previewUrl)) {
+            $previewUrl = $contentUrl;
+        }
+        return new ImageMessageBuilder(
+            $contentUrl,
+            $previewUrl,
+            $this->quickReply,
+            $this->sender
+        );
     }
 
-    // get count
-    function getNumberOfSentReplyMessages($datetime)
+    /**
+     * 動画メッセージを作成する関数
+     *
+     * @param string $contentUrl 動画コンテンツURL
+     * @param string $previewUrl 動画サムネイルURL
+     *
+     * @return VideoMessageBuilder
+     */
+    function createVideoMessage(string $contentUrl, string $previewUrl): VideoMessageBuilder
     {
-        return $this->client->getNumberOfSentReplyMessages($datetime);
-    }
-    function getNumberOfSentPushMessages($datetime)
-    {
-        return $this->client->getNumberOfSentPushMessages($datetime);
-    }
-    function getNumberOfSentMulticastMessages($datetime)
-    {
-        return $this->client->getNumberOfSentMulticastMessages($datetime);
-    }
-    function getNumberOfSentBroadcastMessages($datetime)
-    {
-        return $this->client->getNumberOfSentBroadcastMessages($datetime);
-    }
-    function getNumberOfMessageDeliveries($datetime)
-    {
-        return $this->client->getNumberOfMessageDeliveries($datetime);
-    }
-    function getNumberOfFollowers($datetime)
-    {
-        return $this->client->getNumberOfFollowers($datetime);
-    }
-    function getSentMessageCountThisMonth()
-    {
-        return $this->client->getNumberOfSentThisMonth();
-    }
-    function getAddLimitCountThisMonth()
-    {
-        return $this->client->getNumberOfLimitForAdditional();
+        return new VideoMessageBuilder(
+            $contentUrl,
+            $previewUrl,
+            $this->quickReply,
+            $this->sender
+        );
     }
 
-    // other
-    function getFriendDemographics()
+    /**
+     * 音声メッセージを作成する関数
+     *
+     * @param string $contentUrl 音声コンテンツURL
+     * @param int $duration 音声再生時間
+     *
+     * @return AudioMessageBuilder
+     */
+    function createAudioMessage(string $contentUrl, int $duration): AudioMessageBuilder
     {
-        return $this->client->getFriendDemographics();
-    }
-    function getUserInteractionStatistics($requestId)
-    {
-        return $this->client->getUserInteractionStatistics($requestId);
+        return new AudioMessageBuilder(
+            $contentUrl,
+            $duration,
+            $this->quickReply,
+            $this->sender
+        );
     }
 
-    function sendNarrowcast($message, $recipient = NULL, $demographicFilter = NULL, $limit = NULL)
+    /**
+     * スタンプメッセージを作成する関数
+     *
+     * @param string $packageId パッケージID
+     * @param string $stickerId ステッカーID
+     *
+     * @return StickerMessageBuilder
+     */
+    function createStickerMessage(string $packageId, string $stickerId): StickerMessageBuilder
     {
-        return $this->client->sendNarrowcast($message, $recipient, $demographicFilter, $limit);
+        return new StickerMessageBuilder(
+            $packageId,
+            $stickerId,
+            $this->quickReply,
+            $this->sender
+        );
     }
-    function getNarrowcastProgress($requestId)
+
+    /**
+     * 位置情報メッセージを作成する関数
+     *
+     * @param string $title タイトル
+     * @param string $address 住所
+     * @param float $latitude 緯度
+     * @param float $longitude 経度
+     *
+     * @return LocationMessageBuilder
+     */
+    function createLocationMessage(
+        string $title,
+        string $address,
+        float $latitude,
+        float $longitude
+    ): LocationMessageBuilder {
+        return new LocationMessageBuilder(
+            $title,
+            $address,
+            $latitude,
+            $longitude,
+            $this->quickReply,
+            $this->sender
+        );
+    }
+
+    /**
+     * FLEXメッセージを作成する関数
+     *
+     * @param array $flexContent flexのデータ
+     * @param string $altText altメッセージ
+     *
+     * @return RawMessageBuilder
+     */
+    function createFlexMessage(array $flexContent, string $altText = "Flex Message"): RawMessageBuilder
     {
-        return $this->client->getNarrowcastProgress($requestId);
+        $rawContent = [
+            "type" => "flex",
+            "altText" => $altText,
+            "contents" => $flexContent,
+        ];
+        return $this->createRawMessage($rawContent);
+    }
+
+    /**
+     * 複数メッセージを作成する関数
+     *
+     * @param array $messages メッセージの配列
+     *
+     * @return MultiMessageBuilder
+     */
+    public static function createMultiMessage(array $messages): MultiMessageBuilder
+    {
+        $multiMessage = new MultiMessageBuilder();
+        foreach ($messages as $message) {
+            $multiMessage->add($message);
+        }
+        return $multiMessage;
+    }
+
+    /**
+     * クイックリプライを設定する関数
+     *
+     * @param array $items クリックリプライの配列
+     */
+    function setQuickReply(array $items): void
+    {
+        $buttonBuilders = [];
+        foreach ($items as $item) {
+            $item_action = $item["action"];
+            switch ($item_action["type"]) {
+                case "message":
+                    $action = new MessageTemplateActionBuilder($item_action["label"], $item_action["text"]);
+                    break;
+                case "camera":
+                    $action = new CameraTemplateActionBuilder($item_action["label"]);
+                    break;
+                case "cameraRoll":
+                    $action = new CameraRollTemplateActionBuilder($item_action["label"]);
+                    break;
+                case "location":
+                    $action = new LocationTemplateActionBuilder($item_action["label"]);
+                    break;
+                case "postback":
+                    $action = new PostbackTemplateActionBuilder($item_action["label"], $item_action["data"]);
+                    break;
+                case "datetimepicker":
+                    $action = new DatetimePickerTemplateActionBuilder(
+                        $item_action["label"],
+                        $item_action["data"],
+                        $item_action["mode"],
+                        $item_action["initial"],
+                        $item_action["max"],
+                        $item_action["min"]
+                    );
+                    break;
+                default:
+                    throw new Exception("None action type: '{$item_action['type']}'");
+            }
+            array_push($buttonBuilders, new QuickReplyButtonBuilder($action));
+        }
+        $this->quickReply = new QuickReplyMessageBuilder($buttonBuilders);
+        $this->quickReplyData = ["items" => $items];
+    }
+
+    /**
+     * Senderを設定する関数
+     *
+     * @param string|null $name 表示名
+     * @param string|null $iconUrl アイコンURL
+     */
+    function setSender(?string $name = null, ?string $iconUrl = null): void
+    {
+        $this->sender = new SenderMessageBuilder($name, $iconUrl);
+        $this->senderData = [
+            "name" => $name,
+            "iconUrl" => $iconUrl
+        ];
     }
 }
