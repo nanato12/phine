@@ -7,6 +7,7 @@ use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
 use LINE\Clients\MessagingApi\Model\ErrorResponse;
 use LINE\Clients\MessagingApi\Model\Message;
+use LINE\Clients\MessagingApi\Model\QuickReply;
 use LINE\Clients\MessagingApi\Model\ReplyMessageRequest;
 use LINE\Clients\MessagingApi\Model\ReplyMessageResponse;
 use LINE\Clients\MessagingApi\Model\Sender;
@@ -73,11 +74,16 @@ class Client extends MessagingApiApi
      * Function to send a reply message.
      *
      * @param Message[] $messages
+     * @param Sender|null $sender sender
+     * @param QuickReply|null $quickReply quickReply
      *
      * @throws NullReplyTokenException
      */
-    public function reply(array $messages, ?Sender $sender = null): ErrorResponse|ReplyMessageResponse
-    {
+    public function reply(
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): ErrorResponse|ReplyMessageResponse {
         if (is_null($this->replyToken)) {
             throw new NullReplyTokenException('reply token is null.');
         }
@@ -86,6 +92,15 @@ class Client extends MessagingApiApi
             $messages = array_map(
                 function (Message $m) use ($sender): Message {
                     return $m->setSender($sender);
+                },
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                function (Message $m) use ($quickReply): Message {
+                    return $m->setQuickReply($quickReply);
                 },
                 $messages
             );
