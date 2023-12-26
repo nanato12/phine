@@ -10,19 +10,24 @@ use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Clients\MessagingApi\Model\ReplyMessageRequest;
 use LINE\Clients\MessagingApi\Model\ReplyMessageResponse;
 use LINE\Clients\MessagingApi\Model\Sender;
+use LINE\Constants\EventSourceType;
 use LINE\Parser\EventRequestParser;
+use LINE\Parser\Exception\InvalidEventSourceException;
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\FollowEvent;
+use LINE\Webhook\Model\GroupSource;
 use LINE\Webhook\Model\JoinEvent;
 use LINE\Webhook\Model\MemberJoinedEvent;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\PostbackEvent;
+use LINE\Webhook\Model\RoomSource;
 use Phine\Exceptions\NullReplyTokenException;
+use Phine\Objects\Profile;
 
 /**
  * MessagingApiApi Wrapper class.
  */
-final class Client extends MessagingApiApi
+class Client extends MessagingApiApi
 {
     /** @var Event webhook event */
     public $event;
@@ -111,5 +116,44 @@ final class Client extends MessagingApiApi
         ) {
             $this->replyToken = $event->getReplyToken();
         }
+    }
+
+    /**
+     * Function to retrieve a profile.
+     *
+     * @param string $userID user id
+     *
+     * @return null|Profile user profile
+     */
+    public function getProfileFromUserID(string $userID): ?Profile
+    {
+        $source = $this->event->getSource();
+
+        if (is_null($source)) {
+            return null;
+        }
+
+        switch ($source->getType()) {
+            case EventSourceType::USER:
+                $r = $this->getProfile($userID);
+                break;
+
+            case EventSourceType::GROUP:
+                /** @var GroupSource $source */
+                $r = $this->getGroupMemberProfile($source->getGroupId(), $userID);
+                break;
+
+            case EventSourceType::ROOM:
+                /** @var RoomSource $source */
+                $r = $this->getRoomMemberProfile($source->getRoomId(), $userID);
+                break;
+
+            default:
+                throw new InvalidEventSourceException(
+                    sprintf('"%s" is invalid event source type.', $source->getType())
+                );
+        }
+
+        return Profile::parseFromResponse($r);
     }
 }
