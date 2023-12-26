@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    paths:
+      - back/**
+      - .github/workflows/lint.yml
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  tests-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ["8.1", "8.2", "8.3"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Lint with phpstan and php-cs-fixer
+        run: make lint
