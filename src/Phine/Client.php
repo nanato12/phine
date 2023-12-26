@@ -1,41 +1,115 @@
 <?php
 
-/**
- * Copyright 2020 nanato12
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace Phine;
 
-use Phine\Api\Service;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use LINE\Clients\MessagingApi\Api\MessagingApiApi;
+use LINE\Clients\MessagingApi\Configuration;
+use LINE\Clients\MessagingApi\Model\ErrorResponse;
+use LINE\Clients\MessagingApi\Model\Message;
+use LINE\Clients\MessagingApi\Model\ReplyMessageRequest;
+use LINE\Clients\MessagingApi\Model\ReplyMessageResponse;
+use LINE\Clients\MessagingApi\Model\Sender;
+use LINE\Parser\EventRequestParser;
+use LINE\Webhook\Model\Event;
+use LINE\Webhook\Model\FollowEvent;
+use LINE\Webhook\Model\JoinEvent;
+use LINE\Webhook\Model\MemberJoinedEvent;
+use LINE\Webhook\Model\MessageEvent;
+use LINE\Webhook\Model\PostbackEvent;
+use Phine\Exceptions\NullReplyTokenException;
 
 /**
- * Phine client object (LINE Messaging API).
- *
- * @property float $time インスタンスが作成された時間
+ * MessagingApiApi Wrapper class.
  */
-class Client extends Service
+final class Client extends MessagingApiApi
 {
-    public $time = 0;
+    /** @var Event webhook event */
+    public $event;
+
+    /** @var null|string webhook event reply token */
+    private $replyToken;
+
+    /** @var string line bot chaneel secret */
+    private $channelAccessSecret;
+
+    public function __construct(string $channelAccessToken, string $channelAccessSecret)
+    {
+        $this->channelAccessSecret = $channelAccessSecret;
+
+        $client = new GuzzleHttpClient();
+        $config = (new Configuration())
+            ->setAccessToken($channelAccessToken);
+
+        parent::__construct(
+            client: $client,
+            config: $config,
+        );
+    }
 
     /**
-     * @param string $channelSecret      チャンネルシークレト
-     * @param string $channelAccessToken アクセストークン
+     * Function to parse from http request body to event.
+     *
+     * @param string $body      http request body
+     * @param string $signature http request header x-line-signature
+     *
+     * @return Event[]
      */
-    function __construct(string $channelSecret, string $channelAccessToken)
+    public function parseEventRequest(string $body, string $signature): array
     {
-        $this->time = microtime(true);
-        parent::__construct($channelSecret, $channelAccessToken);
+        return EventRequestParser::parseEventRequest(
+            body: $body,
+            channelSecret: $this->channelAccessSecret,
+            signature: $signature,
+        )->getEvents();
+    }
+
+    /**
+     * Function to send a reply message.
+     *
+     * @param Message[] $messages
+     *
+     * @throws NullReplyTokenException
+     */
+    public function reply(array $messages, ?Sender $sender = null): ErrorResponse|ReplyMessageResponse
+    {
+        if (is_null($this->replyToken)) {
+            throw new NullReplyTokenException('reply token is null.');
+        }
+
+        if (!is_null($sender)) {
+            $messages = array_map(
+                function (Message $m) use ($sender): Message {
+                    return $m->setSender($sender);
+                },
+                $messages
+            );
+        }
+
+        $request = (new ReplyMessageRequest())
+            ->setReplyToken($this->replyToken)
+            ->setMessages($messages);
+
+        return parent::replyMessage($request);
+    }
+
+    /**
+     * Function to set event information and replay token to an instance based on an event.
+     *
+     * @param Event $event イベント
+     */
+    public function setEvent(Event $event): void
+    {
+        $this->event = $event;
+
+        if (
+            $event instanceof MessageEvent
+            || $event instanceof FollowEvent
+            || $event instanceof JoinEvent
+            || $event instanceof MemberJoinedEvent
+            || $event instanceof PostbackEvent
+        ) {
+            $this->replyToken = $event->getReplyToken();
+        }
     }
 }
