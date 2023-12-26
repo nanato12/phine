@@ -39,7 +39,7 @@ class Client extends MessagingApiApi
     /** @var string line bot chaneel secret */
     private $channelAccessSecret;
 
-    public function __construct(string $channelAccessToken, string $channelAccessSecret)
+    public function __construct(string $channelAccessSecret, string $channelAccessToken)
     {
         $this->channelAccessSecret = $channelAccessSecret;
 
