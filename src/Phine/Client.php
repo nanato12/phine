@@ -33,7 +33,7 @@ class Client extends MessagingApiApi
     public $event;
 
     /** @var null|string webhook event reply token */
-    private $replyToken;
+    private $replyToken = null;
 
     /** @var string line bot chaneel secret */
     private $channelAccessSecret;
