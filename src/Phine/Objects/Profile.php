@@ -21,10 +21,10 @@ final class Profile
     public $pictureUrl;
 
     /** @var null|string */
-    public $statusMessage = null;
+    public $statusMessage;
 
     /** @var null|string */
-    public $language = null;
+    public $language;
 
     /**
      * parse from user profile response.

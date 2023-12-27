@@ -34,7 +34,7 @@ class Client extends MessagingApiApi
     public $event;
 
     /** @var null|string webhook event reply token */
-    private $replyToken = null;
+    private $replyToken;
 
     /** @var string line bot chaneel secret */
     private $channelAccessSecret;
@@ -73,9 +73,9 @@ class Client extends MessagingApiApi
     /**
      * Function to send a reply message.
      *
-     * @param Message[] $messages
-     * @param Sender|null $sender sender
-     * @param QuickReply|null $quickReply quickReply
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
      *
      * @throws NullReplyTokenException
      */
