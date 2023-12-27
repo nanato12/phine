@@ -28,5 +28,8 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
 
+      - name: composer
+        run: composer install
+
       - name: Lint with phpstan and php-cs-fixer
         run: make lint
