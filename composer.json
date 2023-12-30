@@ -1,15 +1,23 @@
 {
     "name": "nanato12/phine",
-    "description": "LINE Official Bot PHP Library",
+    "description": "LINE Messaging API SDK for PHP Wrapper",
     "type": "library",
-    "homepage": "https://blog.nanato12.info",
-    "keywords": ["phine"],
+    "homepage": "https://github.com/nanato12/phine",
+    "keywords": [
+        "phine",
+        "line-bot",
+        "line-bot-sdk",
+        "line-messaging-api",
+        "line"
+    ],
     "minimum-stability": "stable",
     "require": {
-        "linecorp/line-bot-sdk": "dev-master"
+        "linecorp/line-bot-sdk": "9.4.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "friendsofphp/php-cs-fixer": "^3.42",
+        "phpstan/phpstan": "^1.10"
     },
     "license": "Apache-2.0",
     "authors": [

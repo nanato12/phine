@@ -1,0 +1,5 @@
+<ruleset name="PhineRuleSet">
+    <description>Customization PSR12 coding-conventions</description>
+    <rule ref="PSR12">
+    </rule>
+</ruleset>
