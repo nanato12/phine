@@ -17,7 +17,11 @@ class TextMessageBuilder extends TextMessage
 
         parent::setText($text);
         parent::setEmojis($emojis);
-        parent::setQuoteToken($quoteToken);
+
+        if (!is_null($quoteToken)) {
+            parent::setQuoteToken($quoteToken);
+        }
+
         parent::setType(MessageType::TEXT);
     }
 }
