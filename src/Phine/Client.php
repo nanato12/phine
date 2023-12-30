@@ -30,7 +30,7 @@ use Phine\Objects\Profile;
  */
 class Client extends MessagingApiApi
 {
-    /** @var Event webhook event */
+    /** @var null|Event webhook event */
     public $event;
 
     /** @var null|string webhook event reply token */
@@ -142,6 +142,12 @@ class Client extends MessagingApiApi
      */
     public function getProfileFromUserID(string $userID): ?Profile
     {
+        if (is_null($this->event)) {
+            $r = $this->getProfile($userID);
+
+            return Profile::parseFromResponse($r);
+        }
+
         $source = $this->event->getSource();
 
         if (is_null($source)) {

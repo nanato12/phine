@@ -4,14 +4,12 @@ on:
   pull_request:
     branches:
       - develop
-      - master
     paths:
-      - back/**
+      - '*.php'
       - .github/workflows/lint.yml
   push:
     branches:
       - develop
-      - master
 
 jobs:
   tests-and-lint:
