@@ -9,9 +9,7 @@ use LINE\Constants\MessageType;
 class TextMessageBuilder extends TextMessage
 {
     /**
-     * @param string $text
      * @param Emoji[] $emojis
-     * @param string|null $quoteToken
      */
     public function __construct(string $text, array $emojis = [], ?string $quoteToken = null)
     {
