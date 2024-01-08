@@ -9,19 +9,23 @@ use LINE\Constants\MessageType;
 class TextMessageBuilder extends TextMessage
 {
     /**
-     * @param Emoji[] $emojis
+     * @param string      $text       Text
+     * @param Emoji[]     $emojis     Emoji list
+     * @param null|string $quoteToken Quote token
      */
     public function __construct(string $text, array $emojis = [], ?string $quoteToken = null)
     {
         parent::__construct();
 
         parent::setText($text);
-        parent::setEmojis($emojis);
+        parent::setType(MessageType::TEXT);
+
+        if (count($emojis)) {
+            parent::setEmojis($emojis);
+        }
 
         if (!is_null($quoteToken)) {
             parent::setQuoteToken($quoteToken);
         }
-
-        parent::setType(MessageType::TEXT);
     }
 }
