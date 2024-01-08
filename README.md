@@ -21,7 +21,7 @@ Builder that generates FlexMessage from array.
 in `flex.json`
 
 ```json
-{"type":"carousel","contents":[{"type":"bubble", ...
+{"type":"carousel","contents":[{"type":"bubble", ...}]}
 ```
 
 ```php
