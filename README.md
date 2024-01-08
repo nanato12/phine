@@ -12,6 +12,34 @@ This class is extend [LINE\Clients\MessagingApi\Api\MessagingApiApi](https://git
 $client = new Client($channelAccessSecret, $channelAccessToken);
 ```
 
+## Message Builders
+
+### RawFlexMessageBuilder
+
+Builder that generates FlexMessage from array.
+
+in `flex.json`
+
+```json
+{"type":"carousel","contents":[{"type":"bubble", ...}]}
+```
+
+```php
+$fileContent = file_get_contents("flex.json");
+$flexContentArray = json_decode($fileContent, true);
+$flexMessage = new RawFlexMessageBuilder($flexContentArray);
+```
+
+### TextMessageBuilder
+
+```php
+$textMessage = new TextMessageBuilder(
+    text: 'text',
+    emojis: [],
+    quoteToken: 'quoteToken'
+);
+```
+
 ## Phine original functions
 
 ## setEvent
