@@ -12,7 +12,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "linecorp/line-bot-sdk": "9.4.4"
+        "linecorp/line-bot-sdk": ">=9.9.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

@@ -7,4 +7,9 @@ parameters:
     excludePaths:
         - ./vendor
 
+    ignoreErrors:
+        - message: '#Unsafe usage of new static\(\).#'
+          paths:
+            - src/Phine/Handlers/BaseEventHandler.php
+
     checkPhpDocMissingReturn: true
