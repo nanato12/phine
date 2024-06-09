@@ -11,5 +11,6 @@ parameters:
         - message: '#Unsafe usage of new static\(\).#'
           paths:
             - src/Phine/Handlers/BaseEventHandler.php
+            - src/Phine/Handlers/EventDispatcher.php
 
     checkPhpDocMissingReturn: true
