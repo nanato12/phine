@@ -4,43 +4,50 @@ namespace Phine\Handlers;
 
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
+use Phine\Client;
+use Phine\Exceptions\InvalidHandlerClassException;
 
-/**
- * Function to return a predefined class array that inherits the class or instance of the argument.
- *
- * @param object|string $class class or instance object
- *
- * @return string[] class array
- */
-function getSubClasses(object|string $class): array
+abstract class EventDispatcher
 {
-    return array_values(
-        array_filter(
-            get_declared_classes(),
-            function (string $c) use ($class): bool {
-                return is_subclass_of($c, is_string($class) ? $class : $class::class);
-            }
-        )
-    );
-}
-
-class EventDispatcher
-{
-    public function dispatch(Event $event): void
+    public static function dispatch(Client $client, Event $event): void
     {
-        /** @var BaseEventHandler[] $handlers */
-        $handlers = getSubClasses(BaseEventHandler::class);
+        $handlers = (new static())->getHandlerClasses();
 
         foreach ($handlers as $handler) {
+            if (!is_subclass_of($handler, BaseEventHandler::class)) {
+                throw new InvalidHandlerClassException(
+                    sprintf("'%s' is not a class that extends BaseEventHandler.", $handler)
+                );
+            }
+
+            /** @var BaseEventHandler $handler */
             if ($handler::getEventClass() !== $event::class) {
                 continue;
             }
 
-            if ($event instanceof MessageEvent && $event->getMessage()::class !== $handler->getMessageTypeClass()) {
+            if ($event instanceof MessageEvent && $event->getMessage()::class !== $handler::getMessageContentClass()) {
                 continue;
             }
+
+            if (
+                ($sourceClass = $handler::getMessageSourceClass())
+                && $sourceClass != 'all'
+                && !is_null($source = $event->getSource())
+                && $sourceClass !== $source::class
+            ) {
+                continue;
+            }
+
+            $client->setEvent($event);
             $h = $handler::getInstance();
-            $h->handle($event);
+            $h->handle($client, $event);
         }
     }
+
+    /**
+     * return handler classes.
+     *
+     * @return string[]
+     */
+    abstract public function getHandlerClasses(): array;
 }
