@@ -6,7 +6,7 @@ use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
 
 /**
- * Function to return a predefined class array that inherits the class or instance of the argument
+ * Function to return a predefined class array that inherits the class or instance of the argument.
  *
  * @param object|string $class class or instance object
  *
@@ -30,10 +30,12 @@ class EventDispatcher
     {
         /** @var BaseEventHandler[] $handlers */
         $handlers = getSubClasses(BaseEventHandler::class);
+
         foreach ($handlers as $handler) {
             if ($handler::getEventClass() !== $event::class) {
                 continue;
             }
+
             if ($event instanceof MessageEvent && $event->getMessage()::class !== $handler->getMessageTypeClass()) {
                 continue;
             }
