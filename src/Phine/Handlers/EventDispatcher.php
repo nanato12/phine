@@ -4,6 +4,7 @@ namespace Phine\Handlers;
 
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
+use LINE\Webhook\Model\TextMessageContent;
 use Phine\Client;
 use Phine\Exceptions\InvalidHandlerClassException;
 
@@ -25,7 +26,10 @@ abstract class EventDispatcher
                 continue;
             }
 
-            if ($event instanceof MessageEvent && $event->getMessage()::class !== $handler::getMessageContentClass()) {
+            if (
+                $event instanceof MessageEvent
+                && $event->getMessage()::class !== $handler::getMessageContentClass()
+            ) {
                 continue;
             }
 
@@ -36,6 +40,20 @@ abstract class EventDispatcher
                 && $sourceClass !== $source::class
             ) {
                 continue;
+            }
+
+            if (
+                is_subclass_of($handler, BaseCommandHandler::class)
+                && $event instanceof MessageEvent
+            ) {
+                $content = $event->getMessage();
+
+                if ($content instanceof TextMessageContent) {
+                    /** @var BaseCommandHandler $handler */
+                    if (!in_array($content->getText(), $handler::commands(), true)) {
+                        continue;
+                    }
+                }
             }
 
             $client->setEvent($event);
