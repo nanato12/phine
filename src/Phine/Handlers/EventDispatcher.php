@@ -47,9 +47,10 @@ abstract class EventDispatcher
                 && $event instanceof MessageEvent
             ) {
                 $content = $event->getMessage();
+
                 if ($content instanceof TextMessageContent) {
                     /** @var BaseCommandHandler $handler */
-                    if (!in_array($content->getText(), $handler::commands())) {
+                    if (!in_array($content->getText(), $handler::commands(), true)) {
                         continue;
                     }
                 }
