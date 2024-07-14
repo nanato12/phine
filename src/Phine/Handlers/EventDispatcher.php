@@ -50,7 +50,15 @@ abstract class EventDispatcher
 
                 if ($content instanceof TextMessageContent) {
                     /** @var BaseCommandHandler $handler */
-                    if (!in_array($content->getText(), $handler::commands(), true)) {
+                    if ($handler::isPrefix()) {
+                        if (
+                            empty(array_filter($handler::commands(), function ($s) use ($content) {
+                                return strpos($content->getText(), $s) === 0;
+                            }))
+                        ) {
+                            continue;
+                        }
+                    } elseif (!in_array($content->getText(), $handler::commands(), true)) {
                         continue;
                     }
                 }
