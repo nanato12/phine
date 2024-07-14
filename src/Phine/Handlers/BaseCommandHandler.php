@@ -16,4 +16,12 @@ abstract class BaseCommandHandler extends BaseEventHandler
      * @return string[]
      */
     abstract public static function commands(): array;
+
+    /**
+     * Whether command arguments are accepted or not.
+     */
+    public static function isPrefix(): bool
+    {
+        return false;
+    }
 }
