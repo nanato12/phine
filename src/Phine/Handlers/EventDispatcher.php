@@ -53,7 +53,7 @@ abstract class EventDispatcher
                     if ($handler::isPrefix()) {
                         if (
                             empty(array_filter($handler::commands(), function ($s) use ($content) {
-                                return strpos($s, $content->getText()) === 0;
+                                return strpos($content->getText(), $s) === 0;
                             }))
                         ) {
                             continue;
