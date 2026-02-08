@@ -1,6 +1,6 @@
 <?php
 
-namespace Phine\Helpers\MessageBuilders;
+namespace Phine\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Clients\MessagingApi\Model\StickerMessage;

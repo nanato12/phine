@@ -1,9 +1,9 @@
 <?php
 
-namespace Phine\Tests\Helpers\MessageBuilders;
+namespace Phine\Tests\MessageBuilders;
 
 use LINE\Constants\MessageType;
-use Phine\Helpers\MessageBuilders\RawFlexMessageBuilder;
+use Phine\MessageBuilders\RawFlexMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

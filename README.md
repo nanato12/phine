@@ -19,7 +19,7 @@ composer require nanato12/phine
 
 ```php
 use Phine\Client;
-use Phine\Helpers\MessageBuilders\TextMessageBuilder;
+use Phine\MessageBuilders\TextMessageBuilder;
 
 $client = new Client($channelSecret, $channelAccessToken);
 
@@ -47,7 +47,7 @@ Phine provides convenient builders for creating LINE messages.
 ### TextMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\TextMessageBuilder;
+use Phine\MessageBuilders\TextMessageBuilder;
 
 // Simple text message
 $message = new TextMessageBuilder('Hello!');
@@ -65,7 +65,7 @@ $message = new TextMessageBuilder(
 Build Flex Messages from a JSON array. Useful when designing messages with the [Flex Message Simulator](https://developers.line.biz/flex-simulator/).
 
 ```php
-use Phine\Helpers\MessageBuilders\RawFlexMessageBuilder;
+use Phine\MessageBuilders\RawFlexMessageBuilder;
 
 $json = file_get_contents('flex.json');
 $contents = json_decode($json, true);
@@ -75,7 +75,7 @@ $message = new RawFlexMessageBuilder($contents, 'Alt text for notifications');
 ### ImageMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\ImageMessageBuilder;
+use Phine\MessageBuilders\ImageMessageBuilder;
 
 $message = new ImageMessageBuilder(
     originalContentUrl: 'https://example.com/image.jpg',
@@ -86,7 +86,7 @@ $message = new ImageMessageBuilder(
 ### VideoMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\VideoMessageBuilder;
+use Phine\MessageBuilders\VideoMessageBuilder;
 
 $message = new VideoMessageBuilder(
     originalContentUrl: 'https://example.com/video.mp4',
@@ -98,7 +98,7 @@ $message = new VideoMessageBuilder(
 ### AudioMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\AudioMessageBuilder;
+use Phine\MessageBuilders\AudioMessageBuilder;
 
 $message = new AudioMessageBuilder(
     originalContentUrl: 'https://example.com/audio.m4a',
@@ -109,7 +109,7 @@ $message = new AudioMessageBuilder(
 ### StickerMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\StickerMessageBuilder;
+use Phine\MessageBuilders\StickerMessageBuilder;
 
 $message = new StickerMessageBuilder(
     packageId: '446',
@@ -120,7 +120,7 @@ $message = new StickerMessageBuilder(
 ### LocationMessageBuilder
 
 ```php
-use Phine\Helpers\MessageBuilders\LocationMessageBuilder;
+use Phine\MessageBuilders\LocationMessageBuilder;
 
 $message = new LocationMessageBuilder(
     title: 'Tokyo Station',
@@ -214,7 +214,7 @@ use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\TextMessageContent;
 use Phine\Client;
 use Phine\Handlers\BaseEventHandler;
-use Phine\Helpers\MessageBuilders\TextMessageBuilder;
+use Phine\MessageBuilders\TextMessageBuilder;
 
 class TextMessageHandler extends BaseEventHandler
 {
@@ -237,7 +237,7 @@ Create handlers that respond to specific text commands:
 use LINE\Webhook\Model\Event;
 use Phine\Client;
 use Phine\Handlers\BaseCommandHandler;
-use Phine\Helpers\MessageBuilders\TextMessageBuilder;
+use Phine\MessageBuilders\TextMessageBuilder;
 
 class HelloHandler extends BaseCommandHandler
 {

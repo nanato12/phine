@@ -1,6 +1,6 @@
 <?php
 
-namespace Phine\Helpers\MessageBuilders;
+namespace Phine\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\Emoji;
 use LINE\Clients\MessagingApi\Model\Message;

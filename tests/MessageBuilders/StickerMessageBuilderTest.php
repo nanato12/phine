@@ -1,9 +1,9 @@
 <?php
 
-namespace Phine\Tests\Helpers\MessageBuilders;
+namespace Phine\Tests\MessageBuilders;
 
 use LINE\Constants\MessageType;
-use Phine\Helpers\MessageBuilders\StickerMessageBuilder;
+use Phine\MessageBuilders\StickerMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

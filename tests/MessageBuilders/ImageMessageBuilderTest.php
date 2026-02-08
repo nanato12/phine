@@ -1,9 +1,9 @@
 <?php
 
-namespace Phine\Tests\Helpers\MessageBuilders;
+namespace Phine\Tests\MessageBuilders;
 
 use LINE\Constants\MessageType;
-use Phine\Helpers\MessageBuilders\ImageMessageBuilder;
+use Phine\MessageBuilders\ImageMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
