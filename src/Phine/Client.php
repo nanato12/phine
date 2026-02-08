@@ -18,6 +18,8 @@ use LINE\Clients\MessagingApi\Model\Sender;
 use LINE\Constants\EventSourceType;
 use LINE\Parser\EventRequestParser;
 use LINE\Parser\Exception\InvalidEventSourceException;
+use LINE\Webhook\Model\AccountLinkEvent;
+use LINE\Webhook\Model\BeaconEvent;
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\FollowEvent;
 use LINE\Webhook\Model\GroupSource;
@@ -26,6 +28,7 @@ use LINE\Webhook\Model\MemberJoinedEvent;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\PostbackEvent;
 use LINE\Webhook\Model\RoomSource;
+use LINE\Webhook\Model\VideoPlayCompleteEvent;
 use Phine\Exceptions\NullReplyTokenException;
 use Phine\Objects\Profile;
 
@@ -229,13 +232,14 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to set event information and replay token to an instance based on an event.
+     * Function to set event information and reply token to an instance based on an event.
      *
-     * @param Event $event イベント
+     * @param Event $event event
      */
     public function setEvent(Event $event): void
     {
         $this->event = $event;
+        $this->replyToken = null;
 
         if (
             $event instanceof MessageEvent
@@ -243,6 +247,9 @@ class Client extends MessagingApiApi
             || $event instanceof JoinEvent
             || $event instanceof MemberJoinedEvent
             || $event instanceof PostbackEvent
+            || $event instanceof BeaconEvent
+            || $event instanceof AccountLinkEvent
+            || $event instanceof VideoPlayCompleteEvent
         ) {
             $this->replyToken = $event->getReplyToken();
         }
