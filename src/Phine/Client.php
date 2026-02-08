@@ -34,14 +34,11 @@ use Phine\Objects\Profile;
  */
 class Client extends MessagingApiApi
 {
-    /** @var null|Event webhook event */
-    public $event;
+    public ?Event $event = null;
 
-    /** @var null|string webhook event reply token */
-    private $replyToken;
+    private ?string $replyToken = null;
 
-    /** @var string line bot chaneel secret */
-    private $channelAccessSecret;
+    private string $channelAccessSecret;
 
     public function __construct(string $channelAccessSecret, string $channelAccessToken)
     {
