@@ -2,36 +2,13 @@
 
 namespace Phine\Handlers;
 
-use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
-use Phine\Client;
 use Phine\Exceptions\NoDefinedException;
 
-interface EventHandler
-{
-    public const EVENT_CLASS = '';
-    public const MESSAGE_TYPE_CLASS = '';
-    public const MESSAGE_SOURCE_CLASS = 'all';
-
-    /**
-     * @param Client $client Phine Client
-     * @param Event  $event  webhook event
-     * */
-    public function handle(Client $client, Event $event): void;
-
-    /**
-     * This is the static method that controls the access to the singleton instance.
-     */
-    public static function getInstance(): static;
-
-    public static function getEventClass(): string;
-
-    public static function getMessageContentClass(): string;
-
-    public static function getMessageSourceClass(): string;
-}
-
-abstract class BaseEventHandler implements EventHandler
+/**
+ * Base class for event handlers.
+ */
+abstract class BaseEventHandler implements EventHandlerInterface
 {
     /** @var array<string, static> */
     private static array $instances = [];
