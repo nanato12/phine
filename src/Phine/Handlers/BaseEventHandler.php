@@ -34,7 +34,13 @@ interface EventHandler
 abstract class BaseEventHandler implements EventHandler
 {
     /** @var array<string, static> */
-    private static $instances = [];
+    private static array $instances = [];
+
+    /**
+     * Constructor is final to ensure getInstance() works correctly.
+     * Child classes should not override this constructor.
+     */
+    final public function __construct() {}
 
     public static function getInstance(): static
     {

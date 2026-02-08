@@ -10,6 +10,12 @@ use Phine\Exceptions\InvalidHandlerClassException;
 
 abstract class EventDispatcher
 {
+    /**
+     * Constructor is final to ensure dispatch() works correctly.
+     * Child classes should not override this constructor.
+     */
+    final public function __construct() {}
+
     public static function dispatch(Client $client, Event $event): void
     {
         $handlers = (new static())->getHandlerClasses();
