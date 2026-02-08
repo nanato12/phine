@@ -1,6 +1,8 @@
 # Phine
 
-LINE Messaging API SDK for PHP Wrapper
+A developer-friendly wrapper for the LINE Messaging API SDK for PHP.
+
+Phine simplifies common LINE bot operations by providing intuitive message builders, event handlers, and convenient client methods.
 
 ## Installation
 
@@ -19,10 +21,10 @@ composer require nanato12/phine
 use Phine\Client;
 use Phine\Helpers\MessageBuilders\TextMessageBuilder;
 
-$client = new Client($channelAccessSecret, $channelAccessToken);
+$client = new Client($channelSecret, $channelAccessToken);
 
-// Parse webhook events
-$events = $client->parseEventRequest($body, $signature);
+// Parse incoming webhook request
+$events = $client->parseEventRequest($requestBody, $signature);
 
 foreach ($events as $event) {
     $client->setEvent($event);
@@ -32,36 +34,42 @@ foreach ($events as $event) {
 
 ## Client
 
-This class extends [LINE\Clients\MessagingApi\Api\MessagingApiApi](https://github.com/line/line-bot-sdk-php/blob/master/src/clients/messaging-api/lib/Api/MessagingApiApi.php).
+The `Client` class extends `MessagingApiApi` from the official LINE SDK, so all original methods are available.
 
 ```php
-$client = new Client($channelAccessSecret, $channelAccessToken);
+$client = new Client($channelSecret, $channelAccessToken);
 ```
 
 ## Message Builders
+
+Phine provides convenient builders for creating LINE messages.
 
 ### TextMessageBuilder
 
 ```php
 use Phine\Helpers\MessageBuilders\TextMessageBuilder;
 
-$textMessage = new TextMessageBuilder(
-    text: 'Hello!',
-    emojis: [],
-    quoteToken: 'quoteToken'
+// Simple text message
+$message = new TextMessageBuilder('Hello!');
+
+// With LINE emojis and quote
+$message = new TextMessageBuilder(
+    text: '$ Hello!',
+    emojis: [$emoji],
+    quoteToken: 'quote-token'
 );
 ```
 
 ### RawFlexMessageBuilder
 
-Builder that generates FlexMessage from array.
+Build Flex Messages from a JSON array. Useful when designing messages with the [Flex Message Simulator](https://developers.line.biz/flex-simulator/).
 
 ```php
 use Phine\Helpers\MessageBuilders\RawFlexMessageBuilder;
 
-$fileContent = file_get_contents("flex.json");
-$flexContentArray = json_decode($fileContent, true);
-$flexMessage = new RawFlexMessageBuilder($flexContentArray, 'Alt Text');
+$json = file_get_contents('flex.json');
+$contents = json_decode($json, true);
+$message = new RawFlexMessageBuilder($contents, 'Alt text for notifications');
 ```
 
 ### ImageMessageBuilder
@@ -69,9 +77,9 @@ $flexMessage = new RawFlexMessageBuilder($flexContentArray, 'Alt Text');
 ```php
 use Phine\Helpers\MessageBuilders\ImageMessageBuilder;
 
-$imageMessage = new ImageMessageBuilder(
-    originalContentUrl: 'https://example.com/original.jpg',
-    previewImageUrl: 'https://example.com/preview.jpg'
+$message = new ImageMessageBuilder(
+    originalContentUrl: 'https://example.com/image.jpg',
+    previewImageUrl: 'https://example.com/image-preview.jpg'
 );
 ```
 
@@ -80,10 +88,10 @@ $imageMessage = new ImageMessageBuilder(
 ```php
 use Phine\Helpers\MessageBuilders\VideoMessageBuilder;
 
-$videoMessage = new VideoMessageBuilder(
+$message = new VideoMessageBuilder(
     originalContentUrl: 'https://example.com/video.mp4',
-    previewImageUrl: 'https://example.com/preview.jpg',
-    trackingId: 'tracking-123' // optional
+    previewImageUrl: 'https://example.com/video-thumbnail.jpg',
+    trackingId: 'tracking-123' // optional, for tracking video views
 );
 ```
 
@@ -92,9 +100,9 @@ $videoMessage = new VideoMessageBuilder(
 ```php
 use Phine\Helpers\MessageBuilders\AudioMessageBuilder;
 
-$audioMessage = new AudioMessageBuilder(
+$message = new AudioMessageBuilder(
     originalContentUrl: 'https://example.com/audio.m4a',
-    duration: 60000 // milliseconds
+    duration: 60000 // duration in milliseconds
 );
 ```
 
@@ -103,7 +111,7 @@ $audioMessage = new AudioMessageBuilder(
 ```php
 use Phine\Helpers\MessageBuilders\StickerMessageBuilder;
 
-$stickerMessage = new StickerMessageBuilder(
+$message = new StickerMessageBuilder(
     packageId: '446',
     stickerId: '1988'
 );
@@ -114,7 +122,7 @@ $stickerMessage = new StickerMessageBuilder(
 ```php
 use Phine\Helpers\MessageBuilders\LocationMessageBuilder;
 
-$locationMessage = new LocationMessageBuilder(
+$message = new LocationMessageBuilder(
     title: 'Tokyo Station',
     address: '1 Chome Marunouchi, Chiyoda City, Tokyo',
     latitude: 35.6812,
@@ -124,9 +132,17 @@ $locationMessage = new LocationMessageBuilder(
 
 ## Client Methods
 
+### parseEventRequest
+
+Parses the incoming webhook request body and validates the signature.
+
+```php
+$events = $client->parseEventRequest($requestBody, $signature);
+```
+
 ### setEvent
 
-Function to hold the received event information in an instance.
+Stores the current event in the client instance. Required before calling `reply()`.
 
 ```php
 $client->setEvent($event);
@@ -134,50 +150,63 @@ $client->setEvent($event);
 
 ### reply
 
-Function to send a reply message.
+Sends a reply message to the user. Must call `setEvent()` first.
 
 ```php
+// Simple reply
+$client->reply([new TextMessageBuilder('Hello!')]);
+
+// With sender icon and quick reply buttons
 $client->reply($messages, $sender, $quickReply);
 ```
 
 ### push
 
-Function to send a push message.
+Sends a push message to a specific user, group, or room.
 
 ```php
-$client->push($to, $messages, $sender, $quickReply);
+$client->push($userId, [new TextMessageBuilder('Hello!')]);
+
+// With sender and quick reply
+$client->push($userId, $messages, $sender, $quickReply);
 ```
 
 ### sendMulticast
 
-Function to send a multicast message to multiple users (max 500).
+Sends a message to multiple users at once (up to 500 users).
 
 ```php
-$client->sendMulticast($userIds, $messages, $sender, $quickReply);
+$userIds = ['U1234...', 'U5678...'];
+$client->sendMulticast($userIds, [new TextMessageBuilder('Hello everyone!')]);
 ```
 
 ### sendBroadcast
 
-Function to send a broadcast message to all users.
+Sends a message to all users who have added your bot as a friend.
 
 ```php
-$client->sendBroadcast($messages, $sender, $quickReply);
+$client->sendBroadcast([new TextMessageBuilder('Announcement!')]);
 ```
 
 ### getProfileFromUserID
 
-Function to retrieve a profile from a user ID. Automatically handles group/room context.
+Retrieves a user's profile. Automatically uses the appropriate API based on the event source (user, group, or room).
 
 ```php
-$profile = $client->getProfileFromUserID($userID);
+$profile = $client->getProfileFromUserID($userId);
+
 echo $profile->displayName;
+echo $profile->pictureUrl;
+echo $profile->statusMessage; // Only available for 1:1 chats
 ```
 
 ## Event Handlers
 
+Phine provides an event handling system to organize your bot logic.
+
 ### BaseEventHandler
 
-Create event handlers by extending `BaseEventHandler`:
+Create handlers for specific event types:
 
 ```php
 use LINE\Webhook\Model\Event;
@@ -185,22 +214,24 @@ use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\TextMessageContent;
 use Phine\Client;
 use Phine\Handlers\BaseEventHandler;
+use Phine\Helpers\MessageBuilders\TextMessageBuilder;
 
 class TextMessageHandler extends BaseEventHandler
 {
     public const EVENT_CLASS = MessageEvent::class;
     public const MESSAGE_TYPE_CLASS = TextMessageContent::class;
+    // Optional: public const MESSAGE_SOURCE_CLASS = GroupSource::class;
 
     public function handle(Client $client, Event $event): void
     {
-        $client->reply([new TextMessageBuilder('Received!')]);
+        $client->reply([new TextMessageBuilder('Message received!')]);
     }
 }
 ```
 
 ### BaseCommandHandler
 
-Create command handlers for specific text commands:
+Create handlers that respond to specific text commands:
 
 ```php
 use LINE\Webhook\Model\Event;
@@ -212,7 +243,7 @@ class HelloHandler extends BaseCommandHandler
 {
     public static function commands(): array
     {
-        return ['hello', 'hi'];
+        return ['hello', 'hi', 'hey'];
     }
 
     public function handle(Client $client, Event $event): void
@@ -222,7 +253,7 @@ class HelloHandler extends BaseCommandHandler
 }
 ```
 
-For prefix matching (commands with arguments):
+For commands with arguments, use prefix matching:
 
 ```php
 class SearchHandler extends BaseCommandHandler
@@ -234,24 +265,29 @@ class SearchHandler extends BaseCommandHandler
 
     public static function isPrefix(): bool
     {
-        return true;
+        return true; // Matches "search foo", "search bar", etc.
     }
 
     public function handle(Client $client, Event $event): void
     {
-        // Handle "search keyword" commands
+        /** @var MessageEvent $event */
+        /** @var TextMessageContent $message */
+        $message = $event->getMessage();
+        $keyword = substr($message->getText(), 7); // Remove "search "
+
+        // Search logic here...
     }
 }
 ```
 
 ### EventDispatcher
 
-Dispatch events to registered handlers:
+Register and dispatch events to your handlers:
 
 ```php
 use Phine\Handlers\EventDispatcher;
 
-class MyDispatcher extends EventDispatcher
+class BotDispatcher extends EventDispatcher
 {
     public function getHandlerClasses(): array
     {
@@ -263,9 +299,11 @@ class MyDispatcher extends EventDispatcher
     }
 }
 
-// Usage
+// In your webhook endpoint
+$events = $client->parseEventRequest($body, $signature);
+
 foreach ($events as $event) {
-    MyDispatcher::dispatch($client, $event);
+    BotDispatcher::dispatch($client, $event);
 }
 ```
 
