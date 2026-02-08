@@ -1,6 +1,6 @@
 <?php
 
-namespace Phine\Objects;
+namespace Phine\DTO;
 
 use LINE\Clients\MessagingApi\Model\GroupUserProfileResponse;
 use LINE\Clients\MessagingApi\Model\RoomUserProfileResponse;

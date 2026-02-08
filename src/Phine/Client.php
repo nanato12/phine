@@ -29,8 +29,8 @@ use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\PostbackEvent;
 use LINE\Webhook\Model\RoomSource;
 use LINE\Webhook\Model\VideoPlayCompleteEvent;
+use Phine\DTO\Profile;
 use Phine\Exceptions\NullReplyTokenException;
-use Phine\Objects\Profile;
 
 /**
  * MessagingApiApi Wrapper class.
@@ -58,7 +58,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to parse from http request body to event.
+     * Parse webhook request body to events.
      *
      * @param string $body      http request body
      * @param string $signature http request header x-line-signature
@@ -75,7 +75,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to send a reply message.
+     * Send a reply message.
      *
      * @param Message[]       $messages
      * @param null|Sender     $sender     sender
@@ -92,23 +92,7 @@ class Client extends MessagingApiApi
             throw new NullReplyTokenException('reply token is null.');
         }
 
-        if (!is_null($sender)) {
-            $messages = array_map(
-                function (Message $m) use ($sender): Message {
-                    return $m->setSender($sender);
-                },
-                $messages
-            );
-        }
-
-        if (!is_null($quickReply)) {
-            $messages = array_map(
-                function (Message $m) use ($quickReply): Message {
-                    return $m->setQuickReply($quickReply);
-                },
-                $messages
-            );
-        }
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
 
         $request = (new ReplyMessageRequest())
             ->setReplyToken($this->replyToken)
@@ -118,7 +102,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to send a push message.
+     * Send a push message.
      *
      * @param string          $to         recipient user/group/room id
      * @param Message[]       $messages
@@ -131,23 +115,7 @@ class Client extends MessagingApiApi
         ?Sender $sender = null,
         ?QuickReply $quickReply = null
     ): ErrorResponse|PushMessageResponse {
-        if (!is_null($sender)) {
-            $messages = array_map(
-                function (Message $m) use ($sender): Message {
-                    return $m->setSender($sender);
-                },
-                $messages
-            );
-        }
-
-        if (!is_null($quickReply)) {
-            $messages = array_map(
-                function (Message $m) use ($quickReply): Message {
-                    return $m->setQuickReply($quickReply);
-                },
-                $messages
-            );
-        }
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
 
         $request = (new PushMessageRequest())
             ->setTo($to)
@@ -157,7 +125,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to send a multicast message.
+     * Send a multicast message.
      *
      * @param string[]        $to         recipient user ids (max 500)
      * @param Message[]       $messages
@@ -170,23 +138,7 @@ class Client extends MessagingApiApi
         ?Sender $sender = null,
         ?QuickReply $quickReply = null
     ): object {
-        if (!is_null($sender)) {
-            $messages = array_map(
-                function (Message $m) use ($sender): Message {
-                    return $m->setSender($sender);
-                },
-                $messages
-            );
-        }
-
-        if (!is_null($quickReply)) {
-            $messages = array_map(
-                function (Message $m) use ($quickReply): Message {
-                    return $m->setQuickReply($quickReply);
-                },
-                $messages
-            );
-        }
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
 
         $request = (new MulticastRequest())
             ->setTo($to)
@@ -196,7 +148,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to send a broadcast message.
+     * Send a broadcast message.
      *
      * @param Message[]       $messages
      * @param null|Sender     $sender     sender
@@ -207,23 +159,7 @@ class Client extends MessagingApiApi
         ?Sender $sender = null,
         ?QuickReply $quickReply = null
     ): object {
-        if (!is_null($sender)) {
-            $messages = array_map(
-                function (Message $m) use ($sender): Message {
-                    return $m->setSender($sender);
-                },
-                $messages
-            );
-        }
-
-        if (!is_null($quickReply)) {
-            $messages = array_map(
-                function (Message $m) use ($quickReply): Message {
-                    return $m->setQuickReply($quickReply);
-                },
-                $messages
-            );
-        }
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
 
         $request = (new BroadcastRequest())
             ->setMessages($messages);
@@ -232,7 +168,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to set event information and reply token to an instance based on an event.
+     * Set event information and reply token.
      *
      * @param Event $event event
      */
@@ -256,7 +192,9 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to retrieve a profile.
+     * Retrieve a user profile.
+     *
+     * Automatically uses the appropriate API based on event source.
      *
      * @param string $userID user id
      *
@@ -298,5 +236,36 @@ class Client extends MessagingApiApi
         }
 
         return Profile::parseFromResponse($r);
+    }
+
+    /**
+     * Apply sender and quickReply options to messages.
+     *
+     * @param Message[]       $messages
+     * @param null|Sender     $sender
+     * @param null|QuickReply $quickReply
+     *
+     * @return Message[]
+     */
+    private function applyMessageOptions(
+        array $messages,
+        ?Sender $sender,
+        ?QuickReply $quickReply
+    ): array {
+        if (!is_null($sender)) {
+            $messages = array_map(
+                fn (Message $m): Message => $m->setSender($sender),
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                fn (Message $m): Message => $m->setQuickReply($quickReply),
+                $messages
+            );
+        }
+
+        return $messages;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Phine\Tests\Objects;
+namespace Phine\Tests\DTO;
 
 use LINE\Clients\MessagingApi\Model\GroupUserProfileResponse;
 use LINE\Clients\MessagingApi\Model\RoomUserProfileResponse;
 use LINE\Clients\MessagingApi\Model\UserProfileResponse;
-use Phine\Objects\Profile;
+use Phine\DTO\Profile;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
