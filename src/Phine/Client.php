@@ -5,8 +5,10 @@ namespace Phine;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
+use LINE\Clients\MessagingApi\Model\BroadcastRequest;
 use LINE\Clients\MessagingApi\Model\ErrorResponse;
 use LINE\Clients\MessagingApi\Model\Message;
+use LINE\Clients\MessagingApi\Model\MulticastRequest;
 use LINE\Clients\MessagingApi\Model\PushMessageRequest;
 use LINE\Clients\MessagingApi\Model\PushMessageResponse;
 use LINE\Clients\MessagingApi\Model\QuickReply;
@@ -152,6 +154,81 @@ class Client extends MessagingApiApi
             ->setMessages($messages);
 
         return parent::pushMessage($request);
+    }
+
+    /**
+     * Function to send a multicast message.
+     *
+     * @param string[]        $to         recipient user ids (max 500)
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function sendMulticast(
+        array $to,
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): object {
+        if (!is_null($sender)) {
+            $messages = array_map(
+                function (Message $m) use ($sender): Message {
+                    return $m->setSender($sender);
+                },
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                function (Message $m) use ($quickReply): Message {
+                    return $m->setQuickReply($quickReply);
+                },
+                $messages
+            );
+        }
+
+        $request = (new MulticastRequest())
+            ->setTo($to)
+            ->setMessages($messages);
+
+        return parent::multicast($request);
+    }
+
+    /**
+     * Function to send a broadcast message.
+     *
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function sendBroadcast(
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): object {
+        if (!is_null($sender)) {
+            $messages = array_map(
+                function (Message $m) use ($sender): Message {
+                    return $m->setSender($sender);
+                },
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                function (Message $m) use ($quickReply): Message {
+                    return $m->setQuickReply($quickReply);
+                },
+                $messages
+            );
+        }
+
+        $request = (new BroadcastRequest())
+            ->setMessages($messages);
+
+        return parent::broadcast($request);
     }
 
     /**
