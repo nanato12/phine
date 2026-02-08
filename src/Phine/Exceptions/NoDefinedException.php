@@ -4,4 +4,4 @@ namespace Phine\Exceptions;
 
 use Exception;
 
-class NoDifinedException extends Exception {}
+class NoDefinedException extends Exception {}

@@ -5,7 +5,7 @@ namespace Phine\Handlers;
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
 use Phine\Client;
-use Phine\Exceptions\NoDifinedException;
+use Phine\Exceptions\NoDefinedException;
 
 interface EventHandler
 {
@@ -52,7 +52,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::EVENT_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('EVENT_CLASS constant not defined in handler.');
+            throw new NoDefinedException('EVENT_CLASS constant not defined in handler.');
         }
 
         return $t;
@@ -69,7 +69,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::MESSAGE_TYPE_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('MESSAGE_TYPE_CLASS constant not defined in message event handler.');
+            throw new NoDefinedException('MESSAGE_TYPE_CLASS constant not defined in message event handler.');
         }
 
         return $t;
@@ -86,7 +86,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::MESSAGE_SOURCE_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('MESSAGE_SOURCE_CLASS constant not defined in message event handler.');
+            throw new NoDefinedException('MESSAGE_SOURCE_CLASS constant not defined in message event handler.');
         }
 
         return $t;
