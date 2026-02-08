@@ -31,5 +31,10 @@
         "psr-4": {
             "Phine\\": "src/Phine/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phine\\Tests\\": "tests/"
+        }
     }
 }
