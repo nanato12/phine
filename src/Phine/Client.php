@@ -7,6 +7,8 @@ use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
 use LINE\Clients\MessagingApi\Model\ErrorResponse;
 use LINE\Clients\MessagingApi\Model\Message;
+use LINE\Clients\MessagingApi\Model\PushMessageRequest;
+use LINE\Clients\MessagingApi\Model\PushMessageResponse;
 use LINE\Clients\MessagingApi\Model\QuickReply;
 use LINE\Clients\MessagingApi\Model\ReplyMessageRequest;
 use LINE\Clients\MessagingApi\Model\ReplyMessageResponse;
@@ -111,6 +113,45 @@ class Client extends MessagingApiApi
             ->setMessages($messages);
 
         return parent::replyMessage($request);
+    }
+
+    /**
+     * Function to send a push message.
+     *
+     * @param string          $to         recipient user/group/room id
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function push(
+        string $to,
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): ErrorResponse|PushMessageResponse {
+        if (!is_null($sender)) {
+            $messages = array_map(
+                function (Message $m) use ($sender): Message {
+                    return $m->setSender($sender);
+                },
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                function (Message $m) use ($quickReply): Message {
+                    return $m->setQuickReply($quickReply);
+                },
+                $messages
+            );
+        }
+
+        $request = (new PushMessageRequest())
+            ->setTo($to)
+            ->setMessages($messages);
+
+        return parent::pushMessage($request);
     }
 
     /**
