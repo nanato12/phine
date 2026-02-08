@@ -2,14 +2,20 @@
 
 namespace Phine\Helpers\MessageBuilders;
 
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Clients\MessagingApi\Model\VideoMessage;
 use LINE\Constants\MessageType;
 
 /**
  * Builder that generates VideoMessage.
  */
-class VideoMessageBuilder extends VideoMessage
+class VideoMessageBuilder extends VideoMessage implements MessageBuilderInterface
 {
+    public function build(): Message
+    {
+        return $this;
+    }
+
     /**
      * @param string $originalContentUrl original video url
      * @param string $previewImageUrl    preview image url

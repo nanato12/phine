@@ -3,13 +3,19 @@
 namespace Phine\Helpers\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\AudioMessage;
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Constants\MessageType;
 
 /**
  * Builder that generates AudioMessage.
  */
-class AudioMessageBuilder extends AudioMessage
+class AudioMessageBuilder extends AudioMessage implements MessageBuilderInterface
 {
+    public function build(): Message
+    {
+        return $this;
+    }
+
     /**
      * @param string $originalContentUrl original audio url
      * @param int    $duration           audio duration in milliseconds

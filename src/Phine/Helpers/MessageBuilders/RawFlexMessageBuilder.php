@@ -3,13 +3,19 @@
 namespace Phine\Helpers\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\FlexMessage;
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Constants\MessageType;
 
 /**
  * Builder that generates FlexMessage from array.
  */
-class RawFlexMessageBuilder extends FlexMessage
+class RawFlexMessageBuilder extends FlexMessage implements MessageBuilderInterface
 {
+    public function build(): Message
+    {
+        return $this;
+    }
+
     /**
      * @param array<string, mixed> $contents Flex array contents
      * @param string               $altText  Alt text

@@ -3,13 +3,19 @@
 namespace Phine\Helpers\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\ImageMessage;
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Constants\MessageType;
 
 /**
  * Builder that generates ImageMessage.
  */
-class ImageMessageBuilder extends ImageMessage
+class ImageMessageBuilder extends ImageMessage implements MessageBuilderInterface
 {
+    public function build(): Message
+    {
+        return $this;
+    }
+
     /**
      * @param string $originalContentUrl original image url
      * @param string $previewImageUrl    preview image url

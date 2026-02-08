@@ -3,11 +3,17 @@
 namespace Phine\Helpers\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\Emoji;
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Clients\MessagingApi\Model\TextMessage;
 use LINE\Constants\MessageType;
 
-class TextMessageBuilder extends TextMessage
+class TextMessageBuilder extends TextMessage implements MessageBuilderInterface
 {
+    public function build(): Message
+    {
+        return $this;
+    }
+
     /**
      * @param string      $text       Text
      * @param Emoji[]     $emojis     Emoji list
