@@ -6,3 +6,7 @@ lint:
 .PHONY: fix
 fix:
 	./vendor/bin/php-cs-fixer fix --path-mode=intersection --config=./.php-cs-fixer.dist.php --verbose --allow-risky=yes ./
+
+.PHONY: test
+test:
+	./vendor/bin/phpunit
