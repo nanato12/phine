@@ -5,8 +5,12 @@ namespace Phine;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
+use LINE\Clients\MessagingApi\Model\BroadcastRequest;
 use LINE\Clients\MessagingApi\Model\ErrorResponse;
 use LINE\Clients\MessagingApi\Model\Message;
+use LINE\Clients\MessagingApi\Model\MulticastRequest;
+use LINE\Clients\MessagingApi\Model\PushMessageRequest;
+use LINE\Clients\MessagingApi\Model\PushMessageResponse;
 use LINE\Clients\MessagingApi\Model\QuickReply;
 use LINE\Clients\MessagingApi\Model\ReplyMessageRequest;
 use LINE\Clients\MessagingApi\Model\ReplyMessageResponse;
@@ -14,6 +18,8 @@ use LINE\Clients\MessagingApi\Model\Sender;
 use LINE\Constants\EventSourceType;
 use LINE\Parser\EventRequestParser;
 use LINE\Parser\Exception\InvalidEventSourceException;
+use LINE\Webhook\Model\AccountLinkEvent;
+use LINE\Webhook\Model\BeaconEvent;
 use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\FollowEvent;
 use LINE\Webhook\Model\GroupSource;
@@ -22,22 +28,20 @@ use LINE\Webhook\Model\MemberJoinedEvent;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\PostbackEvent;
 use LINE\Webhook\Model\RoomSource;
+use LINE\Webhook\Model\VideoPlayCompleteEvent;
+use Phine\DTO\Profile;
 use Phine\Exceptions\NullReplyTokenException;
-use Phine\Objects\Profile;
 
 /**
  * MessagingApiApi Wrapper class.
  */
 class Client extends MessagingApiApi
 {
-    /** @var null|Event webhook event */
-    public $event;
+    public ?Event $event = null;
 
-    /** @var null|string webhook event reply token */
-    private $replyToken;
+    private ?string $replyToken = null;
 
-    /** @var string line bot chaneel secret */
-    private $channelAccessSecret;
+    private string $channelAccessSecret;
 
     public function __construct(string $channelAccessSecret, string $channelAccessToken)
     {
@@ -54,7 +58,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to parse from http request body to event.
+     * Parse webhook request body to events.
      *
      * @param string $body      http request body
      * @param string $signature http request header x-line-signature
@@ -71,7 +75,7 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to send a reply message.
+     * Send a reply message.
      *
      * @param Message[]       $messages
      * @param null|Sender     $sender     sender
@@ -88,23 +92,7 @@ class Client extends MessagingApiApi
             throw new NullReplyTokenException('reply token is null.');
         }
 
-        if (!is_null($sender)) {
-            $messages = array_map(
-                function (Message $m) use ($sender): Message {
-                    return $m->setSender($sender);
-                },
-                $messages
-            );
-        }
-
-        if (!is_null($quickReply)) {
-            $messages = array_map(
-                function (Message $m) use ($quickReply): Message {
-                    return $m->setQuickReply($quickReply);
-                },
-                $messages
-            );
-        }
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
 
         $request = (new ReplyMessageRequest())
             ->setReplyToken($this->replyToken)
@@ -114,13 +102,80 @@ class Client extends MessagingApiApi
     }
 
     /**
-     * Function to set event information and replay token to an instance based on an event.
+     * Send a push message.
      *
-     * @param Event $event イベント
+     * @param string          $to         recipient user/group/room id
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function push(
+        string $to,
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): ErrorResponse|PushMessageResponse {
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
+
+        $request = (new PushMessageRequest())
+            ->setTo($to)
+            ->setMessages($messages);
+
+        return parent::pushMessage($request);
+    }
+
+    /**
+     * Send a multicast message.
+     *
+     * @param string[]        $to         recipient user ids (max 500)
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function sendMulticast(
+        array $to,
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): object {
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
+
+        $request = (new MulticastRequest())
+            ->setTo($to)
+            ->setMessages($messages);
+
+        return parent::multicast($request);
+    }
+
+    /**
+     * Send a broadcast message.
+     *
+     * @param Message[]       $messages
+     * @param null|Sender     $sender     sender
+     * @param null|QuickReply $quickReply quickReply
+     */
+    public function sendBroadcast(
+        array $messages,
+        ?Sender $sender = null,
+        ?QuickReply $quickReply = null
+    ): object {
+        $messages = $this->applyMessageOptions($messages, $sender, $quickReply);
+
+        $request = (new BroadcastRequest())
+            ->setMessages($messages);
+
+        return parent::broadcast($request);
+    }
+
+    /**
+     * Set event information and reply token.
+     *
+     * @param Event $event event
      */
     public function setEvent(Event $event): void
     {
         $this->event = $event;
+        $this->replyToken = null;
 
         if (
             $event instanceof MessageEvent
@@ -128,13 +183,18 @@ class Client extends MessagingApiApi
             || $event instanceof JoinEvent
             || $event instanceof MemberJoinedEvent
             || $event instanceof PostbackEvent
+            || $event instanceof BeaconEvent
+            || $event instanceof AccountLinkEvent
+            || $event instanceof VideoPlayCompleteEvent
         ) {
             $this->replyToken = $event->getReplyToken();
         }
     }
 
     /**
-     * Function to retrieve a profile.
+     * Retrieve a user profile.
+     *
+     * Automatically uses the appropriate API based on event source.
      *
      * @param string $userID user id
      *
@@ -176,5 +236,34 @@ class Client extends MessagingApiApi
         }
 
         return Profile::parseFromResponse($r);
+    }
+
+    /**
+     * Apply sender and quickReply options to messages.
+     *
+     * @param Message[] $messages
+     *
+     * @return Message[]
+     */
+    private function applyMessageOptions(
+        array $messages,
+        ?Sender $sender,
+        ?QuickReply $quickReply
+    ): array {
+        if (!is_null($sender)) {
+            $messages = array_map(
+                fn (Message $m): Message => $m->setSender($sender),
+                $messages
+            );
+        }
+
+        if (!is_null($quickReply)) {
+            $messages = array_map(
+                fn (Message $m): Message => $m->setQuickReply($quickReply),
+                $messages
+            );
+        }
+
+        return $messages;
     }
 }

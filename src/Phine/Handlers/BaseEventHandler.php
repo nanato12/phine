@@ -2,39 +2,22 @@
 
 namespace Phine\Handlers;
 
-use LINE\Webhook\Model\Event;
 use LINE\Webhook\Model\MessageEvent;
-use Phine\Client;
-use Phine\Exceptions\NoDifinedException;
+use Phine\Exceptions\NoDefinedException;
 
-interface EventHandler
-{
-    public const EVENT_CLASS = '';
-    public const MESSAGE_TYPE_CLASS = '';
-    public const MESSAGE_SOURCE_CLASS = 'all';
-
-    /**
-     * @param Client $client Phine Client
-     * @param Event  $event  webhook event
-     * */
-    public function handle(Client $client, Event $event): void;
-
-    /**
-     * This is the static method that controls the access to the singleton instance.
-     */
-    public static function getInstance(): static;
-
-    public static function getEventClass(): string;
-
-    public static function getMessageContentClass(): string;
-
-    public static function getMessageSourceClass(): string;
-}
-
-abstract class BaseEventHandler implements EventHandler
+/**
+ * Base class for event handlers.
+ */
+abstract class BaseEventHandler implements EventHandlerInterface
 {
     /** @var array<string, static> */
-    private static $instances = [];
+    private static array $instances = [];
+
+    /**
+     * Constructor is final to ensure getInstance() works correctly.
+     * Child classes should not override this constructor.
+     */
+    final public function __construct() {}
 
     public static function getInstance(): static
     {
@@ -52,7 +35,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::EVENT_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('EVENT_CLASS constant not defined in handler.');
+            throw new NoDefinedException('EVENT_CLASS constant not defined in handler.');
         }
 
         return $t;
@@ -69,7 +52,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::MESSAGE_TYPE_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('MESSAGE_TYPE_CLASS constant not defined in message event handler.');
+            throw new NoDefinedException('MESSAGE_TYPE_CLASS constant not defined in message event handler.');
         }
 
         return $t;
@@ -86,7 +69,7 @@ abstract class BaseEventHandler implements EventHandler
         $t = static::MESSAGE_SOURCE_CLASS;
 
         if ($t === '') {
-            throw new NoDifinedException('MESSAGE_SOURCE_CLASS constant not defined in message event handler.');
+            throw new NoDefinedException('MESSAGE_SOURCE_CLASS constant not defined in message event handler.');
         }
 
         return $t;

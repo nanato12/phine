@@ -1,6 +1,6 @@
 <?php
 
-namespace Phine\Objects;
+namespace Phine\DTO;
 
 use LINE\Clients\MessagingApi\Model\GroupUserProfileResponse;
 use LINE\Clients\MessagingApi\Model\RoomUserProfileResponse;
@@ -11,20 +11,15 @@ use LINE\Clients\MessagingApi\Model\UserProfileResponse;
  */
 final class Profile
 {
-    /** @var string */
-    public $displayName;
+    public string $displayName;
 
-    /** @var string */
-    public $userId;
+    public string $userId;
 
-    /** @var null|string */
-    public $pictureUrl;
+    public ?string $pictureUrl = null;
 
-    /** @var null|string */
-    public $statusMessage;
+    public ?string $statusMessage = null;
 
-    /** @var null|string */
-    public $language;
+    public ?string $language = null;
 
     /**
      * parse from user profile response.

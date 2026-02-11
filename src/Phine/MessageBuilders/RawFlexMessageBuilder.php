@@ -1,14 +1,15 @@
 <?php
 
-namespace Phine\Helpers\MessageBuilders;
+namespace Phine\MessageBuilders;
 
 use LINE\Clients\MessagingApi\Model\FlexMessage;
+use LINE\Clients\MessagingApi\Model\Message;
 use LINE\Constants\MessageType;
 
 /**
  * Builder that generates FlexMessage from array.
  */
-class RawFlexMessageBuilder extends FlexMessage
+class RawFlexMessageBuilder extends FlexMessage implements MessageBuilderInterface
 {
     /**
      * @param array<string, mixed> $contents Flex array contents
@@ -19,5 +20,10 @@ class RawFlexMessageBuilder extends FlexMessage
         parent::__construct(['contents' => $contents]);
         parent::setAltText($altText);
         parent::setType(MessageType::FLEX);
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }
