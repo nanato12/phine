@@ -11,11 +11,6 @@ use LINE\Constants\MessageType;
  */
 class AudioMessageBuilder extends AudioMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param string $originalContentUrl original audio url
      * @param int    $duration           audio duration in milliseconds
@@ -26,5 +21,10 @@ class AudioMessageBuilder extends AudioMessage implements MessageBuilderInterfac
         parent::setOriginalContentUrl($originalContentUrl);
         parent::setDuration($duration);
         parent::setType(MessageType::AUDIO);
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

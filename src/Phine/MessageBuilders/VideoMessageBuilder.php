@@ -11,11 +11,6 @@ use LINE\Constants\MessageType;
  */
 class VideoMessageBuilder extends VideoMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param string $originalContentUrl original video url
      * @param string $previewImageUrl    preview image url
@@ -34,5 +29,10 @@ class VideoMessageBuilder extends VideoMessage implements MessageBuilderInterfac
         if (!is_null($trackingId)) {
             parent::setTrackingId($trackingId);
         }
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

@@ -8,6 +8,11 @@ use Phine\MessageBuilders\TextMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class TextMessageBuilderTest extends TestCase
 {
     #[Test]

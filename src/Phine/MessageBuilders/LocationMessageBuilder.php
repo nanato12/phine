@@ -11,11 +11,6 @@ use LINE\Constants\MessageType;
  */
 class LocationMessageBuilder extends LocationMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param string $title     location title
      * @param string $address   location address
@@ -34,5 +29,10 @@ class LocationMessageBuilder extends LocationMessage implements MessageBuilderIn
         parent::setLatitude($latitude);
         parent::setLongitude($longitude);
         parent::setType(MessageType::LOCATION);
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

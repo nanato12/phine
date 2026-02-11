@@ -7,6 +7,11 @@ use Phine\MessageBuilders\ImageMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ImageMessageBuilderTest extends TestCase
 {
     #[Test]

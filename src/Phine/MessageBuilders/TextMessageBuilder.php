@@ -9,11 +9,6 @@ use LINE\Constants\MessageType;
 
 class TextMessageBuilder extends TextMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param string      $text       Text
      * @param Emoji[]     $emojis     Emoji list
@@ -33,5 +28,10 @@ class TextMessageBuilder extends TextMessage implements MessageBuilderInterface
         if (!is_null($quoteToken)) {
             parent::setQuoteToken($quoteToken);
         }
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

@@ -9,6 +9,11 @@ use Phine\DTO\Profile;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ProfileTest extends TestCase
 {
     #[Test]

@@ -9,6 +9,11 @@ use Phine\Exceptions\NullReplyTokenException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ExceptionsTest extends TestCase
 {
     #[Test]

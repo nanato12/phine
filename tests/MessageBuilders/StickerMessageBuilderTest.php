@@ -7,6 +7,11 @@ use Phine\MessageBuilders\StickerMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class StickerMessageBuilderTest extends TestCase
 {
     #[Test]

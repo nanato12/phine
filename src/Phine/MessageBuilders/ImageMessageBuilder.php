@@ -11,11 +11,6 @@ use LINE\Constants\MessageType;
  */
 class ImageMessageBuilder extends ImageMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param string $originalContentUrl original image url
      * @param string $previewImageUrl    preview image url
@@ -26,5 +21,10 @@ class ImageMessageBuilder extends ImageMessage implements MessageBuilderInterfac
         parent::setOriginalContentUrl($originalContentUrl);
         parent::setPreviewImageUrl($previewImageUrl);
         parent::setType(MessageType::IMAGE);
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

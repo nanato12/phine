@@ -7,6 +7,11 @@ use Phine\MessageBuilders\RawFlexMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class RawFlexMessageBuilderTest extends TestCase
 {
     #[Test]

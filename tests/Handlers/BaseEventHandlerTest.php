@@ -40,6 +40,11 @@ class NoMessageTypeHandler extends BaseEventHandler
     }
 }
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class BaseEventHandlerTest extends TestCase
 {
     #[Test]

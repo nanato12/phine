@@ -7,6 +7,11 @@ use Phine\MessageBuilders\VideoMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class VideoMessageBuilderTest extends TestCase
 {
     #[Test]

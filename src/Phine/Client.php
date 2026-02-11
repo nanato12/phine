@@ -241,9 +241,7 @@ class Client extends MessagingApiApi
     /**
      * Apply sender and quickReply options to messages.
      *
-     * @param Message[]       $messages
-     * @param null|Sender     $sender
-     * @param null|QuickReply $quickReply
+     * @param Message[] $messages
      *
      * @return Message[]
      */

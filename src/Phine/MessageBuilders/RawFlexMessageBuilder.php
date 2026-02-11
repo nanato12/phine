@@ -11,11 +11,6 @@ use LINE\Constants\MessageType;
  */
 class RawFlexMessageBuilder extends FlexMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
      * @param array<string, mixed> $contents Flex array contents
      * @param string               $altText  Alt text
@@ -25,5 +20,10 @@ class RawFlexMessageBuilder extends FlexMessage implements MessageBuilderInterfa
         parent::__construct(['contents' => $contents]);
         parent::setAltText($altText);
         parent::setType(MessageType::FLEX);
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

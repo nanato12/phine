@@ -11,14 +11,9 @@ use LINE\Constants\MessageType;
  */
 class StickerMessageBuilder extends StickerMessage implements MessageBuilderInterface
 {
-    public function build(): Message
-    {
-        return $this;
-    }
-
     /**
-     * @param string $packageId package id
-     * @param string $stickerId sticker id
+     * @param string $packageId  package id
+     * @param string $stickerId  sticker id
      * @param string $quoteToken quote token
      */
     public function __construct(
@@ -34,5 +29,10 @@ class StickerMessageBuilder extends StickerMessage implements MessageBuilderInte
         if (!is_null($quoteToken)) {
             parent::setQuoteToken($quoteToken);
         }
+    }
+
+    public function build(): Message
+    {
+        return $this;
     }
 }

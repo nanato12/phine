@@ -7,6 +7,11 @@ use Phine\MessageBuilders\LocationMessageBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class LocationMessageBuilderTest extends TestCase
 {
     #[Test]
